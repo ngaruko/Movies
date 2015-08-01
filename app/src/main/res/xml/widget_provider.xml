@@ -1,0 +1,14 @@
+
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:minHeight="150dp"
+
+    android:minWidth="280dp"
+
+
+    android:previewImage="@drawable/android_icon"
+    android:initialLayout="@layout/appwidget"
+    android:updatePeriodMillis="3600000"
+    >
+
+</appwidget-provider>

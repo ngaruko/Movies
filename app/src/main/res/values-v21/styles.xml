@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="AppTheme.Base">
+        <!-- Customize your theme here. -->
+
+        <item name="colorPrimary">@color/primaryColor</item>
+
+        <item name="colorPrimaryDark">@color/primaryColorDark</item>
+
+        <item name="colorAccent">@color/accentColor</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowTransitionBackgroundFadeDuration">5000</item>
+
+    </style>
+
+
+</resources>

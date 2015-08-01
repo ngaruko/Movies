@@ -1,0 +1,33 @@
+<android.support.design.widget.CoordinatorLayout
+    android:id="@+id/main_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="net.kiwigeeks.moviesondemand.fragments.InTheatersFragment"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <android.support.v7.widget.RecyclerView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/list_movies_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        />
+
+    <TextView
+        android:id="@+id/textVolleyError"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="@dimen/size_word"
+
+        android:text="@string/loading"
+        android:visibility="gone"
+
+        />
+
+
+</android.support.design.widget.CoordinatorLayout>
+

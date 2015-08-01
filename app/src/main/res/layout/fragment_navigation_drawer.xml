@@ -1,0 +1,49 @@
+<!--<org.lucasr.dspec.DesignSpecFrameLayout--><!--android:layout_height="match_parent"--><!--android:layout_width="match_parent"--><!--xmlns:android="http://schemas.android.com/apk/res/android"--><!--app:designSpec="@raw/dspec"--><!--xmlns:app="http://schemas.android.com/apk/res-auto"--><!-->-->
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFF"
+    android:orientation="vertical"
+    tools:context="net.kiwigeeks.moviesondemand.NavigationDrawerFragment">
+
+    <LinearLayout
+        android:id="@+id/signing"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#B2EFFF">
+
+
+
+            <ImageButton
+                android:id="@+id/google_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/btn_google_signin_normal" />
+
+
+
+
+
+
+
+
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </android.support.v7.widget.RecyclerView>
+
+</LinearLayout>
+
+    <!--</org.lucasr.dspec.DesignSpecFrameLayout>-->
+
+
+
+
+

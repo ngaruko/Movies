@@ -1,0 +1,37 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/refresh"
+        android:title="@string/action_refresh" />
+
+
+    <item
+        android:id="@+id/action_sort_title"
+        android:orderInCategory="100"
+        android:title="@string/action_sort_title"
+        app:showAsAction="never" />
+
+
+    <item
+        android:id="@+id/action_sort_date"
+        android:orderInCategory="200"
+        android:title="@string/action_sort_date"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_sort_rating"
+        android:orderInCategory="300"
+        android:title="@string/action_sort_rating"
+        app:showAsAction="never" />
+
+    <item android:id="@+id/action_search"
+        android:title="@string/action_search"
+
+        android:icon="@drawable/abc_ic_search_api_mtrl_alpha"
+
+        app:showAsAction="ifRoom|collapseActionView"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        />
+
+
+</menu>
