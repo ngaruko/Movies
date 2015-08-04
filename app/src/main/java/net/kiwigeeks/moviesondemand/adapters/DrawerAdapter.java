@@ -1,15 +1,19 @@
-package net.kiwigeeks.moviesondemand;
+package net.kiwigeeks.moviesondemand.adapters;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import net.kiwigeeks.moviesondemand.DrawerClass;
+import net.kiwigeeks.moviesondemand.MainActivity;
+import net.kiwigeeks.moviesondemand.R;
 import net.kiwigeeks.moviesondemand.activities.SettingsActivity;
 
 import java.util.Collections;
@@ -56,27 +60,40 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.MyViewHold
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(context,MainActivity.class);
+                Intent homeIntent=new Intent(context,MainActivity.class);
+                Intent settingsIntent=new Intent(context,SettingsActivity.class);
 
-                if (currentObject.title=="Home") {
-                context.startActivity(intent);
+                //String about=context.getString(R.string.about);
+
+                switch (currentObject.title){
+                    case "Home":   context.startActivity(homeIntent);
+                        break;
+
+                    case "Settings":context.startActivity(settingsIntent);
+                        break;
+
+                    case "About the app":showAboutPage();
+                        break;
                 }
 
-                if (currentObject.title=="Settings") {
 
-                    Intent settingsIntent=new Intent(context,SettingsActivity.class);
-                    context.startActivity(settingsIntent);
-                }
-
-                Toast.makeText(context, "item clicked at " + position,
-                        Toast.LENGTH_LONG).show();
-
-                //delete(position);
             }
         });
 
     }
 
+    private void showAboutPage() {
+        AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+        alertDialog.setTitle(context.getString(R.string.about));
+        alertDialog.setMessage(context.getString(R.string.about_text));
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
+    }
 
 
     @Override
