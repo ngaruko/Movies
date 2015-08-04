@@ -1,11 +1,7 @@
 package net.kiwigeeks.moviesondemand.utilities;
 
-/**
- * Created by itl on 2/07/2015.
- */
+
 public class EndPoints {
-
-
 
 
     public static final String BASE_URL = "http://www.myapifilms.com/imdb/";
@@ -58,15 +54,6 @@ public class EndPoints {
                 + WITH_TRAILER).replaceAll("\\s+","");
 
     }
-
-
-    public static String getRequestUrlTrailers() {
-
-        return URL_TRAILERS;
-
-    }
-
-
 
 
 }

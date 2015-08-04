@@ -26,6 +26,7 @@ import static net.kiwigeeks.moviesondemand.utilities.Keys.InTheatersEndpoint.KEY
 import static net.kiwigeeks.moviesondemand.utilities.Keys.InTheatersEndpoint.KEY_TITLE;
 import static net.kiwigeeks.moviesondemand.utilities.Keys.InTheatersEndpoint.KEY_TRAILER;
 import static net.kiwigeeks.moviesondemand.utilities.Keys.InTheatersEndpoint.KEY_URLPOSTER;
+import static net.kiwigeeks.moviesondemand.utilities.Keys.InTheatersEndpoint.KEY_URL_IMDB;
 import static net.kiwigeeks.moviesondemand.utilities.Keys.InTheatersEndpoint.KEY_VIDEO_URL;
 
 /**
@@ -105,6 +106,7 @@ public class TrailerParser {
         String plot = Constants.NA;
         String genres = "";
         String thumbnailUrl = Constants.NA;
+        String urlIMDB = Constants.NA;
 
         String videoUrl = Constants.NA;
         if (response != null && response.length() > 0) {
@@ -123,7 +125,6 @@ public class TrailerParser {
 
                 if (currentMovie.has(KEY_TITLE) && !currentMovie.isNull(KEY_TITLE)) {
                     title = currentMovie.getString(KEY_TITLE);
-
 
                 }
                 if (currentMovie.has(KEY_RUNTIME) && !currentMovie.isNull(KEY_RUNTIME) && currentMovie.length() >= 1) {
@@ -146,14 +147,23 @@ public class TrailerParser {
 
                 }
 
+
+                if (currentMovie.has(KEY_URL_IMDB) && !currentMovie.isNull(KEY_URL_IMDB)) {
+                    urlIMDB = currentMovie.getString(KEY_URL_IMDB);
+
+                }
+
+
                 JSONObject trailer;
-                if (currentMovie.has(KEY_TRAILER)) {
+                if (currentMovie.has(KEY_TRAILER) && !currentMovie.isNull(KEY_TRAILER)) {
                     trailer = currentMovie.getJSONObject(KEY_TRAILER);
 
 
-                    JSONArray qualities = trailer.getJSONArray(KEY_QUALITIES);
-                    JSONObject videoUrlObject = (JSONObject) qualities.get(0);
-                    videoUrl = videoUrlObject.getString(KEY_VIDEO_URL);
+                    if (trailer.has(KEY_QUALITIES) && !trailer.isNull(KEY_QUALITIES)) {
+                        JSONArray qualities = trailer.getJSONArray(KEY_QUALITIES);
+                        JSONObject videoUrlObject = (JSONObject) qualities.get(0);
+                        videoUrl = videoUrlObject.getString(KEY_VIDEO_URL);
+                    }
                 }
                 else{
                     LogHelper.log("No Trailers available");
@@ -180,6 +190,7 @@ public class TrailerParser {
                 movie.setTrailerUrl(videoUrl);
                 movie.setRuntime(runtime);
                 movie.setUrlPoster(urlPoster);
+                movie.setUrlIMDB(urlIMDB);
 
                 return movie;
 

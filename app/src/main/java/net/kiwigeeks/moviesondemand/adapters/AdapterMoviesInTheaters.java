@@ -29,20 +29,23 @@ import net.kiwigeeks.moviesondemand.utilities.Constants;
  * Created by itl on 26/07/2015.
  */
 public class AdapterMoviesInTheaters extends RecyclerView.Adapter<AdapterMoviesInTheaters.ViewHolderMovies> {
-private Cursor mCursor;
-private LayoutInflater mLayoutInflater;
+        private Cursor mCursor;
+        private LayoutInflater mLayoutInflater;
 
-private VolleySingleton mVolleySingleton;
-private ImageLoader mImageLoader;
-private Context context;
+        private VolleySingleton mVolleySingleton;
+        private ImageLoader mImageLoader;
+        private Context context;
 
 
-
-public AdapterMoviesInTheaters(Cursor cursor, Context context) {
+        public AdapterMoviesInTheaters(Cursor cursor, Context context) {
         this.context = context;
 
         mCursor = cursor;
-        mLayoutInflater = LayoutInflater.from(context);
+                try {
+                        mLayoutInflater = LayoutInflater.from(context);
+                } catch (Exception e) {
+                        e.printStackTrace();
+                }
         mVolleySingleton = VolleySingleton.getInstance();
         mImageLoader = mVolleySingleton.getImageLoader();
 
@@ -50,72 +53,65 @@ public AdapterMoviesInTheaters(Cursor cursor, Context context) {
         }
 
 
-@Override
-public long getItemId(int position) {
+        @Override
+        public long getItemId(int position) {
         try {
-        mCursor.moveToPosition(position);
+                mCursor.moveToPosition(position);
         } catch (Exception e) {
-        e.printStackTrace();
+                e.printStackTrace();
         }
         return mCursor.getLong(MovieLoader.Query._ID);
         }
 
-@Override
-public ViewHolderMovies onCreateViewHolder(ViewGroup parent, int viewType) {
+        @Override
+        public ViewHolderMovies onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        View view = mLayoutInflater.inflate(R.layout.fragment_in_theaters, parent, false);
-//  ViewHolderMovies viewHolder = new ViewHolderMovies(view);
-//return viewHolder;
+                View view = mLayoutInflater.inflate(R.layout.movie_item_layout, parent, false);
 
-
-// View view = getLayoutInflater().inflate(R.layout.list_item_article, parent, false);
-final ViewHolderMovies vh = new ViewHolderMovies(view);
+                final ViewHolderMovies vh = new ViewHolderMovies(view);
         view.setOnClickListener(new View.OnClickListener() {
-@Override
-public void onClick(View view) {
+                @Override
+                public void onClick(View view) {
 
 
+                        try {
 
-        try {
+                                ActivityOptionsCompat compat = ActivityOptionsCompat.makeSceneTransitionAnimation(new MainActivity(), null);
 
-        ActivityOptionsCompat compat = ActivityOptionsCompat.makeSceneTransitionAnimation(new MainActivity (), null);
+                                Intent i = new Intent(context, MovieDetailActivity.class);
+                                //Intent i = new Intent(context, MovieDetailActivity.class);
+                                Uri uri = MoviesContract.InTheater.buildItemUri(getItemId(vh.getAdapterPosition()));
+                                i.setData(uri);
 
-        Intent i = new Intent(context, MovieDetailActivity.class);
-        //Intent i = new Intent(context, MovieDetailActivity.class);
-        Uri uri = MoviesContract.InTheater.buildItemUri(getItemId(vh.getAdapterPosition()));
-        i.setData(uri);
+                                context.startActivity(i, compat.toBundle());
 
-        context.startActivity(i,compat.toBundle());
 
-//                    Intent intent=new Intent(Intent.ACTION_VIEW,
-//                            MoviesContract.InTheater.buildItemUri(getItemId(vh.getAdapterPosition())));
-//                    //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                    context.startActivity(intent);
-        } catch (Exception e) {
-        Log.e("Intent Error", e.getMessage());
-        }
+                        } catch (Exception e) {
+                                Log.e("Intent Error", e.getMessage());
+                        }
 
-        Log.e("position", String.valueOf(getItemId(vh.getAdapterPosition())));
-        }
+                        Log.e("position", String.valueOf(getItemId(vh.getAdapterPosition())));
+                }
         });
         return vh;
         }
 
-@Override
-public void onBindViewHolder(ViewHolderMovies holder, int position) {
+        @Override
+        public void onBindViewHolder(ViewHolderMovies holder, int position) {
         mCursor.moveToPosition(position);
         holder.movieTitle.setText(mCursor.getString(MovieLoader.Query.COLUMN_TITLE));
+
 
         // holder.type.setText(mCursor.getString(MovieLoader.Query.COLUMN_RELEASE_DATE));
         holder.movieReleaseDate.setText(mCursor.getString(MovieLoader.Query.COLUMN_GENRES));
         Double rating = mCursor.getDouble(MovieLoader.Query.COLUMN_RATING);
 
         if (rating == -1) {
-        holder.movieRating.setRating(0.0F);
-        holder.movieRating.setAlpha(0.5F); //only 50% visible
+                holder.movieRating.setRating(0.0F);
+                holder.movieRating.setAlpha(0.5F); //only 50% visible
         } else {
-        holder.movieRating.setRating((float) (rating / 2.0F));
-        holder.movieRating.setAlpha(1.0F);
+                holder.movieRating.setRating((float) (rating / 2.0F));
+                holder.movieRating.setAlpha(1.0F);
         }
 
         //load url
@@ -125,45 +121,45 @@ public void onBindViewHolder(ViewHolderMovies holder, int position) {
         loadImages(holder, thummbailUrl);
         }
 
-private void loadImages(final ViewHolderMovies holder, String thumbailUrl) {
+        private void loadImages(final ViewHolderMovies holder, String thumbailUrl) {
         if (!thumbailUrl.equals(Constants.NA)) {
-        mImageLoader.get(thumbailUrl, new ImageLoader.ImageListener() {
-@Override
-public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
-        holder.movieThumbnail.setImageBitmap(response.getBitmap());
+                mImageLoader.get(thumbailUrl, new ImageLoader.ImageListener() {
+                        @Override
+                        public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
+                                holder.movieThumbnail.setImageBitmap(response.getBitmap());
+                        }
+
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                                //have a default image here
+
+                        }
+                });
+        }
         }
 
-@Override
-public void onErrorResponse(VolleyError error) {
-        //have a default image here
 
-        }
-        });
-        }
-        }
-
-
-@Override
-public int getItemCount() {
+        @Override
+        public int getItemCount() {
         return mCursor == null ? 0 : mCursor.getCount();
         }
 
 
-public class ViewHolderMovies extends RecyclerView.ViewHolder {
+        public class ViewHolderMovies extends RecyclerView.ViewHolder {
 
-    ImageView movieThumbnail;
-    TextView movieTitle;
-    TextView movieReleaseDate;
-    RatingBar movieRating;
+                ImageView movieThumbnail;
+                TextView movieTitle;
+                TextView movieReleaseDate;
+                RatingBar movieRating;
 
 
-    public ViewHolderMovies(View itemView) {
-        super(itemView);
+                public ViewHolderMovies(View itemView) {
+                        super(itemView);
 
-        movieThumbnail = (ImageView) itemView.findViewById(R.id.movieThumbnail);
-        movieTitle = (TextView) itemView.findViewById(R.id.movieTitle);
-        movieReleaseDate = (TextView) itemView.findViewById(R.id.movieReleaseDate);
-        movieRating = (RatingBar) itemView.findViewById(R.id.movieRating);
+                        movieThumbnail = (ImageView) itemView.findViewById(R.id.movieThumbnail);
+                        movieTitle = (TextView) itemView.findViewById(R.id.movieTitle);
+                        movieReleaseDate = (TextView) itemView.findViewById(R.id.movieReleaseDate);
+                        movieRating = (RatingBar) itemView.findViewById(R.id.movieRating);
+                }
     }
-}
 }

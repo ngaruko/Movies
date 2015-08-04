@@ -28,7 +28,7 @@ public class MoviesHelper extends SQLiteOpenHelper {
 
 
     private static final String DB_NAME = "movies_db";
-    private static final int DB_VERSION = 12;
+    private static final int DB_VERSION = 14;
     private Context mContext;
 
     public MoviesHelper(Context context) {
@@ -57,12 +57,11 @@ public class MoviesHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         try {
             Log.e("On Upgrade", "upgrade table executed");
-            // db.execSQL(" DROP TABLE " + MoviesProvider.Tables.IN_THEATERS + " IF EXISTS;");
-            //db.execSQL(" DROP TABLE " + TABLE_COMING_SOON + " IF EXISTS;");
+
             db.execSQL("DROP TABLE IF EXISTS " + MoviesProvider.Tables.IN_THEATERS);
             db.execSQL("DROP TABLE IF EXISTS " + MoviesProvider.Tables.COMING_SOON);
             db.execSQL("DROP TABLE IF EXISTS " + MoviesProvider.Tables.TOP_MOVIES);
-           // db.execSQL("DROP TABLE IF EXISTS " + MoviesProvider.Tables.TRAILERS);
+
             db.execSQL("DROP TABLE IF EXISTS " + MoviesProvider.Tables.BOTTOM_MOVIES);
             onCreate(db);
         } catch (SQLiteException exception) {

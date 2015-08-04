@@ -21,6 +21,7 @@
                 android:id="@+id/google_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:contentDescription="@string/common_signin_button_text"
                 android:src="@drawable/btn_google_signin_normal" />
 
 
@@ -41,7 +42,6 @@
 
 </LinearLayout>
 
-    <!--</org.lucasr.dspec.DesignSpecFrameLayout>-->
 
 
 

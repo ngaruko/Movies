@@ -3,14 +3,11 @@ package net.kiwigeeks.moviesondemand.services;
 import android.app.IntentService;
 import android.content.ContentProviderOperation;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.view.WindowManager;
 
 import com.android.volley.RequestQueue;
 
@@ -27,18 +24,14 @@ import java.util.ArrayList;
 
 public class MoviesService extends IntentService {
 
-    public VolleySingleton volleySingleton;
-    public RequestQueue requestQueue;
-    public Context context;
-
-    private static final String TAG = "MoviesService";
-
     public static final String BROADCAST_ACTION_STATE_CHANGE
             = "net.kiwigeeks.moviesondemand.intent.action.STATE_CHANGE";
     public static final String EXTRA_REFRESHING
             = "net.kiwigeeks.moviesondemand.intent.extra.REFRESHING";
-
-
+    private static final String TAG = "MoviesService";
+    public VolleySingleton volleySingleton;
+    public RequestQueue requestQueue;
+    public Context context;
 
 
     public MoviesService() {
@@ -57,8 +50,8 @@ public class MoviesService extends IntentService {
         NetworkInfo ni = cm.getActiveNetworkInfo();
         if (ni == null || !ni.isConnected()) {
             Log.w(TAG, "Not online, not refreshing.");
-      // notifyUser("Connection Error", "Please check your internet connection!");
-           startActivity(new Intent(this, DialogClass.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+
+            startActivity(new Intent(this, DialogClass.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
 
             return;
         }
@@ -86,9 +79,6 @@ public class MoviesService extends IntentService {
         cpoComing.add(ContentProviderOperation.newDelete(comingSoonUri).build());
 
 
-        // saveTheatersMoviesData(cpo, theatersUri);
-
-
         JSONArray theatersResponse = null;
         JSONArray comingSoonResponse = null;
         JSONArray topMoviesResponse = null;
@@ -106,29 +96,13 @@ public class MoviesService extends IntentService {
 
 
         new JSonParser(this).parseAndSaveData(cpoTheaters, theatersUri, theatersResponse);
-        new JSonParser(this).parseAndSaveData(cpoComing,comingSoonUri,comingSoonResponse);
-        new JSonParser(this).parseAndSaveData(cpoTop,topMoviesUri,topMoviesResponse);
-        new JSonParser(this).parseAndSaveData(cpoBottom,bottomMoviesUri,bottomMoviesResponse);
+        new JSonParser(this).parseAndSaveData(cpoComing, comingSoonUri, comingSoonResponse);
+        new JSonParser(this).parseAndSaveData(cpoTop, topMoviesUri, topMoviesResponse);
+        new JSonParser(this).parseAndSaveData(cpoBottom, bottomMoviesUri, bottomMoviesResponse);
 
 
         sendStickyBroadcast(
                 new Intent(BROADCAST_ACTION_STATE_CHANGE).putExtra(EXTRA_REFRESHING, false));
-    }
-
-    private void notifyUser(String title, String message) {
-        AlertDialog alertDialog = new AlertDialog.Builder(getBaseContext()).create();
-        alertDialog.setTitle(title);
-        alertDialog.setMessage(message);
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-        alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-        alertDialog.show();
-       //alertDialog.getContext();
     }
 
 

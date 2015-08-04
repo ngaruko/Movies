@@ -9,20 +9,13 @@
     <string name="title_activity_main_activity2">MainActivity2Activity</string>
     <string name="title_activity_navigation_drawer">NavigationDrawerActivity</string>
 
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_example">Example action</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title">Some Title</string>
-    <string name="description">Some Description</string>
-    <string name="page_one">This is Page Number One #1</string>
+
 
     <!--FOR TABS-->
     <string-array name="tabs">
@@ -31,6 +24,14 @@
         <item> Top Movies</item>
         <item> Coming Soon</item>
         <item>Bottom Movies </item>
+    </string-array>
+
+    <!--FOR DRAWER-->
+    <string-array name="drawerItems">
+        <item>Home</item>
+        <item>Settings</item>
+        <item> @string/about</item>
+
     </string-array>
 
     <!--<ERROR STRINGS>-->
@@ -49,9 +50,15 @@
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
     <string name="title_activity_signing">SigningActivity</string>
     <string name="title_activity_home">HomeActivity</string>
-    <string name="app_desc">With modern advances in technology, the good old “brick-and-mortar” DVD rental store does not make any sense. I mean, who needs to drive a mile to the store, spends an hour walking up and down the store aisles looking for a movie that he could get from the comfort of his home. for a fraction of a price and in better quality than the often scratched DVDs we get from the DVD store. This app helps movie lovers, not only browse what is available on the market and in theatres, but also to watch trailers for free and full movies for a fraction of the DVD cost either on subscription basis or on a pay-as-you-use model.</string>
+    <string name="app_desc">With modern advances in technology, the good old “brick-and-mortar” DVD rental store does not make any sense. I mean, who needs to drive a mile to the store, spend an hour walking up and down the store aisles looking for a movie that he could get from the comfort of his home. For a fraction of a price and in better quality than the often scratched DVDs we get from the DVD store. This app helps movie lovers, not only browse what is available on the market and in theatres, but also to watch trailers for free and full movies for a fraction of the DVD cost either on subscription basis or on a pay-as-you-use model.</string>
     <string name="title_activity_movie_detail">MovieDetailActivity</string>
     <string name="action_share">Share</string>
+
+
+    <string name="about">About this App</string>
+    <string name="about_text">This application gets movie information from a "Myfilms" API. Movies are classified as Top, Bottom, in theatres and Coming soon. Upon launching the app, the app displays the Movies screen with “intheaters”
+movies. Tabs allow for other movies’ option selection.
+When a user selects a movie, he is given options to watch the trailer (if signed in or prompted to sign in), to see full synopsis or view full movie  (of course this feature is not fully implemented, there are copy rights involved that the app developer needs to have for this to work.). </string>
 
 
     <string name="action_refresh">Refresh</string>
@@ -68,4 +75,15 @@
     <string name="action_search">Search Movie</string>
     <string name="title_activity_movie_search">MovieSearchActivity</string>
     <string name="action_sort_rating">Sort by rating</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="sign_out_button_text">Sign out button</string>
+    <string name="revoke_access">Revoke Access</string>
+    <string name="sign_in_status">Sign in status</string>
+    <string name="admob_banner_text">AdMob banner</string>
+    <string name="movie_synopsis">Movie Synospis</string>
+    <string name="movie_byline">Movie Byline</string>
+    <string name="movie_tile">Movie title</string>
+    <string name="movie_thumbnail">Movie Thumbnail</string>
+    <string name="rating_bar">Rating bar</string>
+    <string name="release_date_text">Release date</string>
 </resources>

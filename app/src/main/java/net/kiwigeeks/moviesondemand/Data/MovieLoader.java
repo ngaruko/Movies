@@ -4,10 +4,13 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.net.Uri;
 
-/**
- * Helper for loading a list of articles or a single article.
- */
+
+
 public class MovieLoader extends CursorLoader {
+    private MovieLoader(Context context, Uri uri) {
+        super(context, uri, Query.PROJECTION, null, null, MoviesContract.InTheater.getSortString());
+    }
+
     public static MovieLoader newAllInTheatersMoviesInstance(Context context) {
         return new MovieLoader(context, MoviesContract.InTheater.buildDirUri());
     }
@@ -20,14 +23,8 @@ public class MovieLoader extends CursorLoader {
         return new MovieLoader(context, MoviesContract.ComingSoon.buildDirUri());
     }
 
-
-
     public static MovieLoader newInstanceForItemId(Context context, long itemId) {
         return new MovieLoader(context, MoviesContract.InTheater.buildItemUri(itemId));
-    }
-
-    private MovieLoader(Context context, Uri uri) {
-        super(context, uri, Query.PROJECTION, null, null, MoviesContract.InTheater.getSortString());
     }
 
     public static MovieLoader newAllBottomMoviesInstance(Context context) {

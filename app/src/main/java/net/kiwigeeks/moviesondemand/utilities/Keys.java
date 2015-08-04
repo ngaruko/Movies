@@ -33,6 +33,7 @@ public interface Keys {
          String KEY_TRAILER = "trailer";
         String KEY_CONTENT_RATING="contentRating";
         String KEY_QUALITIES = "qualities";
+        String KEY_URL_IMDB = "urlIMDB";
 
         //for movie
 

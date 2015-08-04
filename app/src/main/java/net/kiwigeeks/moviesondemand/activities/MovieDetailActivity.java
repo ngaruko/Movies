@@ -24,9 +24,7 @@ import net.kiwigeeks.moviesondemand.data.MovieLoader;
 import net.kiwigeeks.moviesondemand.data.MoviesContract;
 
 
-/**
- * An activity representing a single Article detail screen, letting you swipe between articles.
- */
+
 public class MovieDetailActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -65,7 +63,7 @@ public class MovieDetailActivity extends AppCompatActivity
         getLoaderManager().initLoader(0, null, this);
 
         mPagerAdapter = new MyPagerAdapter(getFragmentManager());
-        mPager = (ViewPager) findViewById(R.id.pager);
+        mPager = (ViewPager) findViewById(R.id.detail_pager);
         mPager.setAdapter(mPagerAdapter);
         mPager.setPageMargin((int) TypedValue
                 .applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getResources().getDisplayMetrics()));

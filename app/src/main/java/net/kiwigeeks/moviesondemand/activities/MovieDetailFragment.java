@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
@@ -37,12 +38,13 @@ import net.kiwigeeks.moviesondemand.utilities.ImageLoaderHelper;
 import net.kiwigeeks.moviesondemand.utilities.ObservableScrollView;
 
 
-public class MovieDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener, MovieLoadedListener {
-    private static final String TAG = "MovieDetailFragment";
-
+public class MovieDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
     public static final String ARG_ITEM_ID = "in_theaters_id";
+    private static final String TAG = "MovieDetailFragment";
     private static final float PARALLAX_FACTOR = 1.25f;
-
+    public int mTitleId;
+    public String mTitle;
+    public String mVideoUrl;
     private Cursor mCursor;
     private long mItemId;
     private View mRootView;
@@ -50,15 +52,14 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
     private ObservableScrollView mScrollView;
     private DrawInsetsFrameLayout mDrawInsetsFrameLayout;
     private ColorDrawable mStatusBarColorDrawable;
-
     private int mTopInset;
     private View mPhotoContainerView;
     private ImageView mPhotoView;
     private int mScrollY;
     private boolean mIsCard = false;
     private int mStatusBarFullOpacityBottom;
-    private String mVideoUrl;
     private TextView bodyView;
+    private CharSequence mUrlIMDB;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -75,12 +76,28 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
         return fragment;
     }
 
+    static float progress(float v, float min, float max) {
+        return constrain((v - min) / (max - min), 0, 1);
+    }
+
+    static float constrain(float val, float min, float max) {
+        if (val < min) {
+            return min;
+        } else if (val > max) {
+            return max;
+        } else {
+            return val;
+        }
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             mItemId = getArguments().getLong(ARG_ITEM_ID);
+
+
         }
 
         mIsCard = getResources().getBoolean(R.bool.detail_is_card);
@@ -134,7 +151,7 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
             public void onClick(View view) {
                 startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(getActivity())
                         .setType("text/plain")
-                        .setText("Some sample text")
+                        .setText(mVideoUrl != null ? mVideoUrl : mUrlIMDB)
                         .getIntent(), getString(R.string.action_share)));
             }
         });
@@ -161,33 +178,16 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
         mDrawInsetsFrameLayout.setInsetBackground(mStatusBarColorDrawable);
     }
 
-    static float progress(float v, float min, float max) {
-        return constrain((v - min) / (max - min), 0, 1);
-    }
-
-    static float constrain(float val, float min, float max) {
-        if (val < min) {
-            return min;
-        } else if (val > max) {
-            return max;
-        } else {
-            return val;
-        }
-    }
-
     private void bindViews() {
         if (mRootView == null) {
             return;
         }
 
 
-
-
-
-        TextView titleView = (TextView) mRootView.findViewById(R.id.article_title);
-        TextView bylineView = (TextView) mRootView.findViewById(R.id.article_byline);
+        TextView titleView = (TextView) mRootView.findViewById(R.id.movie_title);
+        TextView bylineView = (TextView) mRootView.findViewById(R.id.movie_byline);
         bylineView.setMovementMethod(new LinkMovementMethod());
-         bodyView = (TextView) mRootView.findViewById(R.id.article_body);
+        bodyView = (TextView) mRootView.findViewById(R.id.movie_synopsis);
         //bodyView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Rosario-Regular.ttf"));
 
         if (mCursor != null) {
@@ -195,8 +195,12 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
             mRootView.setVisibility(View.VISIBLE);
             mRootView.animate().alpha(1);
 
-            int mTitleId = MovieLoader.Query.COLUMN_TITLE;
-            titleView.setText(mCursor.getString(mTitleId));
+            mTitleId = MovieLoader.Query.COLUMN_TITLE;
+            mTitle = mCursor.getString(mTitleId);
+            titleView.setText(mTitle);
+
+            mUrlIMDB = "http://www.imdb.com/title/" + mCursor.getString(MovieLoader.Query.COLUMN_IMDB_ID);
+
             bylineView.setText( mCursor.getLong(MovieLoader.Query.COLUMN_RELEASE_DATE)
                             + "  "
                             + mCursor.getString(MovieLoader.Query.COLUMN_RATED)
@@ -217,6 +221,7 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
                                 Palette p = Palette.generate(bitmap, 12);
                               //  mMutedColor = p.getDarkMutedColor(0xFF333333);
                                 mPhotoView.setImageBitmap(imageContainer.getBitmap());
+
                                 mRootView.findViewById(R.id.meta_bar);
                                       //  .setBackgroundColor(mMutedColor);
                                 updateStatusBar();
@@ -229,10 +234,7 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
                         }
                     });
 
-            //JSONArray response = Requestor.requestMoviesJSON(requestQueue, EndPoints.getRequestMovieUrl(title));
-          //mVideoUrl= TrailerParser.getTrailerUrl(mCursor.getString(mTitleId));
-            new FetchMovieTask(this).execute(mCursor.getString(mTitleId));
-          //  mVideoUrl= TrailerParser.getTrailerUrl("The help");
+
 
 
         } else {
@@ -289,15 +291,30 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
         switch (v.getId()) {
             case R.id.view_trailer_button:
 
+                new FetchMovieTask(new MovieLoadedListener() {
+                    @Override
+                    public void onMovieLoded(Movie movie) {
 
-                Log.e("Clikced", "Trailer coming");
+                        if (movie == null) return;
+                        mVideoUrl = movie.getTrailerUrl();
 
-                if(HomeFragment.signedIn) {
-                    startActivity(new Intent(Intent.ACTION_VIEW,
-                            Uri.parse(mVideoUrl)));
-                } else promptUserToSignIn();
 
-               // startActivity(new Intent(getActivity(),VideoPlayerActivity.class));
+                        Log.e("Clikced", "Trailer coming");
+
+                        if (HomeFragment.signedIn) {
+                            if (mVideoUrl != null && !mVideoUrl.isEmpty()) {
+                                startActivity(new Intent(Intent.ACTION_VIEW,
+                                        Uri.parse(mVideoUrl)));
+                            } else {
+                                Toast.makeText(getActivity(), "No trailers available for this movie!",
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        } else promptUserToSignIn();
+
+
+                    }
+                }).execute(mTitle);
+
 
                 break;
             case R.id.full_synopsis_button:
@@ -306,18 +323,23 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
 
                 break;
             case R.id.full_movie_button:
-                AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
-                alertDialog.setTitle(" UNDER CONSTRUCTION!");
-                alertDialog.setMessage("This feature is NOT available YET. Developer still applying for copy right from copy rigt holders. Sorry!");
-                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
+                showFullMovie();
 
                 break;
         }
+    }
+
+    private void showFullMovie() {
+        AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
+        alertDialog.setTitle(" UNDER CONSTRUCTION!");
+        alertDialog.setMessage("This feature is NOT available YET. Developer still applying for copy right from copy rigt holders. Sorry!");
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
     }
 
     private void promptUserToSignIn() {
@@ -329,6 +351,7 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(getActivity(), MainActivity.class);
                         getActivity().startActivity(intent);
+
                     }
                 });
 
@@ -343,11 +366,5 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
 
     }
 
-    @Override
-    public void onMovieLoded(Movie movie) {
 
-        if (movie==null) return;
-
-        mVideoUrl=movie.getTrailerUrl();
-    }
 }

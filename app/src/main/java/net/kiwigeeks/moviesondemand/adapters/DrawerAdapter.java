@@ -60,19 +60,22 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.MyViewHold
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent homeIntent=new Intent(context,MainActivity.class);
-                Intent settingsIntent=new Intent(context,SettingsActivity.class);
+                Intent homeIntent = new Intent(context, MainActivity.class);
+                Intent settingsIntent = new Intent(context, SettingsActivity.class);
 
                 //String about=context.getString(R.string.about);
 
-                switch (currentObject.title){
-                    case "Home":   context.startActivity(homeIntent);
+                switch (currentObject.title) {
+                    case "Home":
+                        context.startActivity(homeIntent);
                         break;
 
-                    case "Settings":context.startActivity(settingsIntent);
+                    case "Settings":
+                        context.startActivity(settingsIntent);
                         break;
 
-                    case "About the app":showAboutPage();
+                    case "About this App":
+                        showAboutPage();
                         break;
                 }
 

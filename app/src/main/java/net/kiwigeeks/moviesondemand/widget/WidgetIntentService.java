@@ -7,18 +7,19 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.RemoteViews;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.androidquery.AQuery;
 
-import net.kiwigeeks.moviesondemand.data.MoviesContract;
-import net.kiwigeeks.moviesondemand.data.MoviesHelper;
 import net.kiwigeeks.moviesondemand.MainActivity;
 import net.kiwigeeks.moviesondemand.R;
 import net.kiwigeeks.moviesondemand.VolleySingleton;
+import net.kiwigeeks.moviesondemand.data.MoviesContract;
+import net.kiwigeeks.moviesondemand.utilities.Constants;
 
 
 /**
@@ -30,36 +31,36 @@ import net.kiwigeeks.moviesondemand.VolleySingleton;
 public class WidgetIntentService extends IntentService {
 
 
-    private VolleySingleton mVolleySingleton;
-    private ImageLoader mImageLoader;
-    private Context context;
+    public static final int COL_TITLE = 1;
+    public static final int COL_GENRES = 2;
+    public static final int COL_RATED = 3;
+    public static final int COL_THUMBNAIL = 4;
+    public static final int COL_RELEASE_DATE = 5;
+    public static final int COL_RATING = 6;
     // A "projection" defines the columns that will be returned for each row
-    private static final String[] SCORE_COLUMNS = {
+    private static final String[] MOVIES_COLUMNS = {
 
             MoviesContract.InTheater._ID,
             MoviesContract.InTheater.COLUMN_TITLE,
-            //MoviesContract.InTheater.COLUMN_GENRES,
+            MoviesContract.InTheater.COLUMN_GENRES,
             MoviesContract.InTheater.COLUMN_RATED,
             MoviesContract.InTheater.COLUMN_URL_THUMBNAIL,
             MoviesContract.InTheater.COLUMN_RELEASE_DATE,
             MoviesContract.InTheater.COLUMN_RATING
     };
-
-
-//    // Defines a string to contain the selection clause
-//    String mSelectionClause = null;
-//
-//    // Initializes an array to contain selection arguments
-//    String[] mSelectionArgs = {""};
-
     public double _ID = 0;
-    public static final int COL_TITLE = 1;
-    //public static final int COL_GENRES = 2;
-    public static final int COL_RATED = 2;
-    public static final int COL_THUMBNAIL = 3;
-    public static final int COL_RELEASE_DATE = 4;
-    public static final int COL_RATING = 5;
+    private VolleySingleton mVolleySingleton;
+    private ImageLoader mImageLoader;
+    private Context context;
     private AQuery aq;
+    private String thumbnailUrl;
+    private ImageView mPhotoView;
+    private String title;
+    private String releaseDate;
+    private int[] appWidgetIds;
+    private AppWidgetManager appWidgetManager;
+    private String genres;
+
 
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
@@ -75,13 +76,12 @@ public class WidgetIntentService extends IntentService {
         mImageLoader = mVolleySingleton.getImageLoader();
 
         // Retrieve all of the Today widget ids: these are the widgets we need to update
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this,
+        appWidgetManager = AppWidgetManager.getInstance(this);
+        appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this,
                 WidgetProvider.class));
-
-        SQLiteDatabase db = new MoviesHelper(getBaseContext()).getReadableDatabase();
-        Cursor data = db.query(MoviesContract.InTheater.TABLE_IN_THEATERS, SCORE_COLUMNS, null, null, null, null, MoviesContract.InTheater.COLUMN_TITLE + " ASC");
-
+        Uri movieUri = MoviesContract.InTheater.buildDirUri();
+        Cursor data = getContentResolver().query(movieUri, MOVIES_COLUMNS, null,
+                null, MoviesContract.InTheater.COLUMN_RELEASE_DATE + " ASC");
 
         if (data == null) {
 
@@ -90,59 +90,78 @@ public class WidgetIntentService extends IntentService {
             data.close();
             Log.e("Data Empty", "No data");
 
-        }
-        else if (data.moveToFirst()) {
+        } else if (data.moveToFirst()) {
 
 
-            String title = data.getString(COL_TITLE);
-            String releaseDate = data.getString(COL_RELEASE_DATE);
+            title = data.getString(COL_TITLE);
+            releaseDate = data.getString(COL_RELEASE_DATE);
 
-            String thumbnailUrl=data.getString(COL_THUMBNAIL);
-//            int away_goals = data.getInt(COL_AWAY_GOALS);
-//            int home_goals = data.getInt(COL_HOME_GOALS);
-//            int league = data.getInt(COL_LEAGUE);
-//            String mTime = data.getString(COL_MATCHTIME);
-//            int match_day = data.getInt(COL_MATCHDAY);
-//            String mDate = data.getString(COL_DATE);
-
+            thumbnailUrl = data.getString(COL_THUMBNAIL);
+            genres = data.getString(COL_GENRES);
 
             data.close();
 
             // Perform this loop procedure for each Today widget
-            for (
-                    int appWidgetId
-                    : appWidgetIds)
+            for (int appWidgetId : appWidgetIds)
 
-            {
-                int layoutId = R.layout.appwidget;
-                //RemoteViews views = new RemoteViews(context.getPackageName(), layoutId);
-                final RemoteViews views = new RemoteViews(getPackageName(), layoutId);
+                populateWidget(appWidgetManager, appWidgetId);
 
-                //TODO change the widget icon to generic icon
-
-//                views.setImageViewResource(R.id.home_crest, Utilies.getTeamCrestByTeamName(home));
-//                views.setImageViewResource(R.id.away_crest, Utilies.getTeamCrestByTeamName(away));
-                views.setTextViewText(R.id.widgetMovieTitle, title);
-                views.setTextViewText(R.id.wigetMovieReleaseDate, releaseDate);
-//                views.setTextViewText(R.id.data_textview, mTime);
-//                views.setTextViewText(R.id.score_textview, Utilies.getScores(home_goals, away_goals));
-//            views.setTextViewText(R.id.league_textview,Utilies.getLeague(league));
-//            views.setTextViewText(R.id.matchday_textview,Utilies.getMatchDay(match_day,league));
-
-                aq = new AQuery(this);
-
-                aq.id(R.id.widgetThumbnail).image(thumbnailUrl);
-               Log.e("Imagethumbnail",thumbnailUrl);
-                // Create an Intent to launch MainActivity
-                Intent launchIntent = new Intent(this, MainActivity.class);
-                PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, launchIntent, 0);
-                views.setOnClickPendingIntent(R.id.appWidget, pendingIntent);
-
-                // Tell the AppWidgetManager to perform an update on the current app widget
-                appWidgetManager.updateAppWidget(appWidgetId, views);
-
-            }
         }
+
+    }
+
+    private void populateWidget(AppWidgetManager appWidgetManager, int appWidgetId) {
+        int layoutId = R.layout.appwidget;
+        //RemoteViews views = new RemoteViews(context.getPackageName(), layoutId);
+        final RemoteViews views = new RemoteViews(getPackageName(), layoutId);
+
+        //TODO change the widget icon to generic icon
+
+        views.setImageViewResource(R.id.widgetThumbnail, R.drawable.movie);
+//                views.setImageViewResource(R.id.away_crest, Utilies.getTeamCrestByTeamName(away));
+
+
+        views.setTextViewText(R.id.widgetMovieTitle, title);
+        views.setTextViewText(R.id.widgetMovieReleaseDate, releaseDate);
+
+        views.setTextViewText(R.id.wigetGenres, genres);
+
+        if (!thumbnailUrl.equals(Constants.NA)) {
+//            mImageLoader.get(thumbnailUrl, new ImageLoader.ImageListener() {
+//                @Override
+//                public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
+//
+//                    views.setImageViewBitmap(R.id.movieThumbnail, response.getBitmap());
+//
+//                }
+//
+//                @Override
+//                public void onErrorResponse(VolleyError error) {
+//                    //have a default image here
+//                    Log.e("Volley Image Error", error.getMessage());
+//                }
+//            });
+
+//
+//            Picasso.with(getBaseContext())
+//                    .load(thumbnailUrl)
+//                    .resize(50, 50)
+//                    .centerCrop().into(views,R.id.widgetThumbnail,appWidgetIds);
+
+
+        }
+//
+//                aq = new AQuery(this);
+//
+//                aq.id(R.id.widgetThumbnail).image(thumbnailUrl);
+//               Log.e("Imagethumbnail",thumbnailUrl);
+        // Create an Intent to launch MainActivity
+        Intent launchIntent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, launchIntent, 0);
+        views.setOnClickPendingIntent(R.id.appWidget, pendingIntent);
+
+        // Tell the AppWidgetManager to perform an update on the current app widget
+        appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 
 

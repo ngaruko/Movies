@@ -51,6 +51,97 @@ public class JSonParser {
         this.context = context;
     }
 
+    private static Double getRating(String rating) {
+
+        if (rating.contains(",")) {
+            rating = rating.replace(rating.charAt(1), '.');
+        }
+        try {
+
+            return Double.parseDouble(rating);
+        } catch (NumberFormatException e) {
+            // e.printStackTrace();
+            Log.e("NumberFormatException", e.getMessage());
+        }
+        return -1.0;
+    }
+
+    public static ContentValues parseMovie(JSONObject currentMovie) throws JSONException {
+
+        //Initialise all the fields
+
+        String title = Constants.NA;
+        String id = Constants.NA;
+        String released = Constants.NA;
+        Double rating = -1.0;
+        String rated = Constants.NA;
+        String urlPoster = Constants.NA;
+        String ratingString = Constants.NA;
+        String runtime = Constants.NA;
+        String plot = Constants.NA;
+        String genres = "";
+        String tthumbnailUrl = Constants.NA;
+
+
+        if (currentMovie.has(KEY_ID) && !currentMovie.isNull(KEY_ID)) {
+            id = currentMovie.getString(KEY_ID);
+        }
+        released = currentMovie.getString(KEY_RELEASE_DATE);
+        int releaseDate = 0;
+        releaseDate = Integer.parseInt(released);
+
+        if (currentMovie.has(KEY_TITLE) && !currentMovie.isNull(KEY_TITLE)) {
+            title = currentMovie.getString(KEY_TITLE);
+
+
+        }
+        if (currentMovie.has(KEY_RUNTIME) && !currentMovie.isNull(KEY_RUNTIME) && currentMovie.length() >= 1) {
+            try {
+                runtime = currentMovie.getJSONArray(KEY_RUNTIME).get(0).toString();
+            } catch (JSONException e) {
+                Log.e("Parse error", e.getMessage());
+            }
+        }
+        if (currentMovie.has(KEY_GENRES) && !currentMovie.isNull(KEY_GENRES)) {
+
+            //TODO serialise this
+            JSONArray genresArray = currentMovie.getJSONArray(KEY_GENRES);
+            for (int g = 0; g < genresArray.length(); g++) {
+                String genre = genresArray.get(g).toString();
+                genres = genres.concat(", " + genre).substring(1);
+
+            }
+
+
+        }
+
+
+        rated = currentMovie.getString(KEY_RATED);
+        plot = currentMovie.getString(KEY_PLOT);
+        urlPoster = currentMovie.getString(KEY_URLPOSTER);
+        if (currentMovie.has(KEY_RATINGS) && !currentMovie.isNull(KEY_RATINGS)) {
+            ratingString = currentMovie.getString(KEY_RATINGS);
+        }
+        rating = getRating(ratingString);
+        Log.e("ratings ", Double.toString(rating));
+
+
+        //INSERT THIS TO DB
+        ContentValues values = new ContentValues();
+
+        values.put(COLUMN_TITLE, title);
+        values.put(MoviesContract.MoviesColumns.COLUMN_IMDB_ID, id);
+        values.put(MoviesContract.MoviesColumns.COLUMN_PLOT, plot);
+        values.put(MoviesContract.MoviesColumns.COLUMN_RATED, rated);
+        values.put(MoviesContract.MoviesColumns.COLUMN_RATING, rating);
+        values.put(MoviesContract.MoviesColumns.COLUMN_RELEASE_DATE, releaseDate);
+        values.put(MoviesContract.MoviesColumns.COLUMN_URL_THUMBNAIL, urlPoster);
+        values.put(MoviesContract.MoviesColumns.COLUMN_GENRES, genres);
+        values.put(MoviesContract.MoviesColumns.COLUMN_RUNTIME, runtime);
+
+        return values;
+    }
+
     public void parseAndSaveData(ArrayList<ContentProviderOperation> cpo, Uri uri, JSONArray response) {
 
 
@@ -96,7 +187,9 @@ public class JSonParser {
                             if (currentMovie.has(KEY_ID) && !currentMovie.isNull(KEY_ID)) {
                                 id = currentMovie.getString(KEY_ID);
                             }
-                            released = currentMovie.getString(KEY_RELEASE_DATE);
+                            if (currentMovie.has(KEY_RELEASE_DATE) && !currentMovie.isNull(KEY_RELEASE_DATE)) {
+                                released = currentMovie.getString(KEY_RELEASE_DATE);
+                            }
                             int releaseDate = 0;
                             releaseDate = Integer.parseInt(released);
 
@@ -116,11 +209,20 @@ public class JSonParser {
 
                                 //TODO serialise this
                                 JSONArray genresArray = currentMovie.getJSONArray(KEY_GENRES);
-                                for (int g = 0; g < genresArray.length(); g++) {
-                                    String genre = genresArray.get(g).toString();
-                                    genres = genres.concat(", " + genre).substring(1);
+                                if (genresArray.length() == 1)
+                                    genres = genresArray.get(0).toString();
+                                else {
+                                    String addGenres = null;
 
-                                }
+
+                                    for (int g = 1; g < genresArray.length(); g++) {
+                                        addGenres = ", " + genresArray.get(g).toString();
+
+                                    }
+
+
+                                    genres = genresArray.get(0) + addGenres;
+                            }
 
 
                             }
@@ -168,26 +270,4 @@ public class JSonParser {
 
         }
     }
-
-
-
-
-
-    private static Double getRating(String rating) {
-
-        if (rating.contains(",")) {
-            rating = rating.replace(rating.charAt(1), '.');
-        }
-        try {
-
-            return Double.parseDouble(rating);
-        } catch (NumberFormatException e) {
-            // e.printStackTrace();
-            Log.e("NumberFormatException", e.getMessage());
-        }
-        return -1.0;
-    }
-
-
-
 }

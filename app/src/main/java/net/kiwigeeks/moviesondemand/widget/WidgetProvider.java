@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import net.kiwigeeks.moviesondemand.data.UpdaterService;
+import net.kiwigeeks.moviesondemand.services.MoviesService;
 import net.kiwigeeks.moviesondemand.utilities.LogHelper;
 
 /**
@@ -48,7 +48,7 @@ public class WidgetProvider extends AppWidgetProvider {
     private void updateDatabase(Context context) {
 
 
-        Intent service_start = new Intent(context, UpdaterService.class);
+        Intent service_start = new Intent(context, MoviesService.class);
         context.startService(service_start);
 
         Log.e("Updating Db", "db");

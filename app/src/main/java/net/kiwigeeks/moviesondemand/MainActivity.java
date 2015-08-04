@@ -1,6 +1,9 @@
 package net.kiwigeeks.moviesondemand;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -8,6 +11,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -19,7 +23,6 @@ import android.widget.Toast;
 
 import net.kiwigeeks.moviesondemand.activities.HomeFragment;
 import net.kiwigeeks.moviesondemand.activities.MovieSearchActivity;
-import net.kiwigeeks.moviesondemand.data.UpdaterService;
 import net.kiwigeeks.moviesondemand.fragments.BottomMoviesFragment;
 import net.kiwigeeks.moviesondemand.fragments.ComingSoonFragment;
 import net.kiwigeeks.moviesondemand.fragments.InTheatersFragment;
@@ -29,20 +32,19 @@ import net.kiwigeeks.moviesondemand.utilities.LogHelper;
 import net.kiwigeeks.moviesondemand.utilities.SortListener;
 
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends AppCompatActivity {
 
 
-    //int representing our 0th tab corresponding to the Fragment where search results are dispalyed
-    public static final int TAB_TOP_MOVIES = 2;
-    //int corresponding to our 1st tab corresponding to the Fragment where box office hits are dispalyed
-    public static final int TAB_IN_THEATERS = 1;
-    //int corresponding to our 2nd tab corresponding to the Fragment where upcoming movies are displayed
-    public static final int TAB_COMING_SOON = 3;
     public static final int TAB_HOME = 0;
-    //int corresponding to the number of tabs in our Activity
+    public static final int TAB_IN_THEATERS = 1;
+    public static final int TAB_TOP_MOVIES = 2;
+
+    public static final int TAB_COMING_SOON = 3;
+
     public static final int TAB_BOTTOM_MOVIES = 4;
 
     public static final int TAB_COUNT = 5;
+
 
     private Toolbar toolbar;
 
@@ -51,13 +53,13 @@ public class MainActivity extends AppCompatActivity  {
 
 
     private MyPagerAdapter mAdapter;
-    private String mTitle;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_appbar);
+        setContentView(R.layout.activity_main);
 
         toolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
@@ -67,15 +69,21 @@ public class MainActivity extends AppCompatActivity  {
 
         drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), toolbar);
 
+
         //Initialise mpager and mTabs
 
         mPager = (ViewPager) findViewById(R.id.pager);
-
+        mPager.setOffscreenPageLimit(5);
         //For tabs
         mAdapter = new MyPagerAdapter(getSupportFragmentManager());
+
+
         mPager.setAdapter(mAdapter);
+        // Attach the page change listener inside the activity
+
 
         mTabs = (SlidingTabLayout) findViewById(R.id.tabs);
+
 
         mTabs.setViewPager(mPager);
 
@@ -84,10 +92,50 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo ni = cm.getActiveNetworkInfo();
+        if (ni == null || !ni.isConnected()) {
+            Log.w("Internet", "Not online, not refreshing.");
+
+
+            AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+            alertDialog.setTitle("Connection Error");
+            alertDialog.setMessage("Please check your internet connection!");
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            alertDialog.getContext();
+
+        }
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         for (Fragment fragment : getSupportFragmentManager().getFragments()) {
             fragment.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mPager.getCurrentItem() == 0) {
+            // If the user is currently looking at the first step, allow the system to handle the
+            // Back button. This calls finish() on this activity and pops the back stack.
+            super.onBackPressed();
+        } else {
+            // Otherwise, select the previous step.
+            try {
+                mPager.setCurrentItem(mPager.getCurrentItem() - 1);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -101,7 +149,6 @@ public class MainActivity extends AppCompatActivity  {
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
         handleSearchView(searchView);
-
 
 
         return true;
@@ -126,7 +173,7 @@ public class MainActivity extends AppCompatActivity  {
             @Override
             public boolean onQueryTextSubmit(String query) {
 //todo here
-               //mTitle=query;
+                //mTitle=query;
                 search.clearFocus();
                 //display the Progress bar
 //                progressbarView.setVisibility(View.VISIBLE);
@@ -135,7 +182,6 @@ public class MainActivity extends AppCompatActivity  {
 
                 return false;
             }
-
 
 
             @Override
@@ -150,29 +196,27 @@ public class MainActivity extends AppCompatActivity  {
     }
 
 
-        public void searchForMovies(String  searchQuery) {
+    public void searchForMovies(String searchQuery) {
 
-            //todo a asunc tast to get movies
+        //todo a asunc tast to get movies
 
 
 //validation here; ask user to enter the artist name
 
 
-            if (searchQuery != null) {
+        if (searchQuery != null) {
 
 
-                LogHelper.log("Sending intent from Main: " + searchQuery);
-                Intent intent = new Intent(this, MovieSearchActivity.class);
+            LogHelper.log("Sending intent from Main: " + searchQuery);
+            Intent intent = new Intent(this, MovieSearchActivity.class);
 
-                intent.putExtra("title_extra", searchQuery);
-                startActivity(intent);
-            }
-            else
-                Toast.makeText(this, "Please enter a valid, non-empty search query!! ", Toast.LENGTH_LONG).show();
-
+            intent.putExtra("title_extra", searchQuery);
+            startActivity(intent);
+        } else
+            Toast.makeText(this, "Please enter a valid, non-empty search query!! ", Toast.LENGTH_LONG).show();
 
 
-            //todo call fragment
+        //todo call fragment
 
 
     }
@@ -199,7 +243,8 @@ public class MainActivity extends AppCompatActivity  {
                     }
                     break;
                 case R.id.action_sort_title:
-                    try {Log.e("rfress", "refereshin");
+                    try {
+                        Log.e("title", "tile");
                         ((SortListener) fragment).onSortTitle();
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -209,8 +254,9 @@ public class MainActivity extends AppCompatActivity  {
 
                 case R.id.action_sort_date:
                     try {
+                        Log.e("date", "date");
                         ((SortListener) fragment).onSortByDate();
-                        ;
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -219,35 +265,20 @@ public class MainActivity extends AppCompatActivity  {
 
                 case R.id.action_sort_rating:
                     try {
+                        Log.e("rating", "rating");
                         ((SortListener) fragment).onSortByRating();
 
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                     break;
-                default:break;
+                default:
+                    break;
             }
         }
 
 
-
-
-
         return super.onOptionsItemSelected(item);
-    }
-
-    private void sortByDate() {
-       Log.e("sorted!", "");
-
-    }
-
-    private void sortByTitle() {
-
-        Log.e("sorted!", "");
-    }
-
-    private void refresh() {
-        startService(new Intent(this, UpdaterService.class));
     }
 
 
@@ -256,38 +287,50 @@ public class MainActivity extends AppCompatActivity  {
     public class MyPagerAdapter extends FragmentStatePagerAdapter {
 
         //Initialise string-array for tabs
-        String[] tabs;
+        String[] tabs = getResources().getStringArray(R.array.tabs);
 
 
         public MyPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
 
-            tabs = getResources().getStringArray(R.array.tabs);
         }
 
         @Override
         public Fragment getItem(int position) {
+
+
             Fragment fragment = null;
 
-//            L.m("getItem called for " + num);
+
             switch (position) {
-                case TAB_TOP_MOVIES:
-                    fragment = TopMoviesFragment.newInstance("", "");
-                    break;
-                case TAB_IN_THEATERS:
-                    fragment = InTheatersFragment.newInstance("", "");
-                    break;
-                case TAB_COMING_SOON:
-                    fragment = ComingSoonFragment.newInstance("", "");
-                    break;
 
                 case TAB_HOME:
                     fragment = HomeFragment.newInstance("", "");
+
+                    break;
+
+
+                case TAB_IN_THEATERS:
+                    fragment = InTheatersFragment.newInstance("", "");
+                    break;
+
+                case TAB_TOP_MOVIES:
+                    fragment = TopMoviesFragment.newInstance("", "");
+
+
+                    break;
+
+                case TAB_COMING_SOON:
+                    fragment = ComingSoonFragment.newInstance("", "");
+
                     break;
 
                 case TAB_BOTTOM_MOVIES:
                     fragment = BottomMoviesFragment.newInstance("", "");
+
+
                     break;
+
             }
             return fragment;
         }

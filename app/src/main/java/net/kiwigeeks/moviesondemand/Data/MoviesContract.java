@@ -15,7 +15,7 @@ public class MoviesContract {
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_TOP_MOVIES = "top_movies";
     public static final String PATH_COMING_SOON = "coming_soon";
-    public static final String PATH_TRAILERS = "trailers";
+
     public static final String PATH_INTHEATERS = "in_theaters";
     public static final String PATH_BOTTOM_MOVIES = "bottom_movies";
 
@@ -40,10 +40,6 @@ public class MoviesContract {
     }
 
 
-
-
-
-
     /* Inner class that defines the table contents of the in theaters table */
     public static final class InTheater implements MoviesColumns {
 
@@ -56,7 +52,7 @@ public class MoviesContract {
 
         public static String DEFAULT_SORT = COLUMN_RELEASE_DATE + " DESC";
         public static String TITLE_SORT = COLUMN_TITLE + " ASC";
-        public static String RATING_SORT = COLUMN_RATING + " ASC";
+        public static String RATING_SORT = COLUMN_RATING + " DESC";
 
 
         /**
@@ -189,10 +185,6 @@ public class MoviesContract {
         public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_BOTTOM_MOVIES;
 
 
-
-
-
-
         /**
          * Matches: /movies/
          */
@@ -216,10 +208,5 @@ public class MoviesContract {
 
 
     }
-
-
-
-
-
 
 }

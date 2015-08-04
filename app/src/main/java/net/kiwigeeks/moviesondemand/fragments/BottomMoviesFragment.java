@@ -5,41 +5,43 @@ import android.app.LoaderManager;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import net.kiwigeeks.moviesondemand.adapters.AdapterMovies;
-import net.kiwigeeks.moviesondemand.data.MovieLoader;
-import net.kiwigeeks.moviesondemand.data.UpdaterService;
 import net.kiwigeeks.moviesondemand.R;
+import net.kiwigeeks.moviesondemand.adapters.AdapterBottomMovies;
+import net.kiwigeeks.moviesondemand.data.MovieLoader;
+import net.kiwigeeks.moviesondemand.services.MoviesService;
+import net.kiwigeeks.moviesondemand.utilities.MovieSorter;
 import net.kiwigeeks.moviesondemand.utilities.SortListener;
 
 
 public class BottomMoviesFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> , SortListener{
-    // TODO: Rename parameter arguments, choose names that match
+
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
+    private static final String TAG_SORT_TITLE = "sortTitle";
+    //tag associated with the  menu button that sorts by date
+    private static final String TAG_SORT_DATE = "sortDate";
+    //tag associated with the  menu button that sorts by ratings
+
+    private static final String TAG_SORT_RATING = "sortRating";
+
     private String mParam1;
     private String mParam2;
     private RecyclerView mRecyclerView;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment BottomMoviesFragment.
-     */
-    // TODO: Rename and change types and number of parameters
+    public BottomMoviesFragment() {
+        // Required empty public constructor
+    }
+
     public static BottomMoviesFragment newInstance(String param1, String param2) {
         BottomMoviesFragment fragment = new BottomMoviesFragment();
         Bundle args = new Bundle();
@@ -49,10 +51,6 @@ public class BottomMoviesFragment extends Fragment implements LoaderManager.Load
         return fragment;
     }
 
-    public BottomMoviesFragment() {
-        // Required empty public constructor
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,26 +58,24 @@ public class BottomMoviesFragment extends Fragment implements LoaderManager.Load
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        getActivity().getLoaderManager().initLoader(4, null, this);
+        if (savedInstanceState == null) {
+
+            getActivity().startService(new Intent(getActivity(), MoviesService.class));
+
+        }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
         View view= inflater.inflate(R.layout.fragment_bottom_movies, container, false);
 
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.list_movies_view);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.bottom_movies_recyclerView);
 
-
-        getActivity().getLoaderManager().initLoader(0, null, this);
-
-
-        if (savedInstanceState == null) {
-            // refresh();
-            Log.e("No data", "null data");
-            getActivity().startService(new Intent(getActivity(), UpdaterService.class));
-            Log.e("savedInstanceState", "service updated");
-        }
 
 
         return view;
@@ -93,7 +89,7 @@ public class BottomMoviesFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void onLoadFinished(android.content.Loader<Cursor> loader, Cursor cursor) {
-        AdapterMovies adapter = new AdapterMovies(cursor, getActivity(), R.layout.bottom_movie_item_layout);
+        AdapterBottomMovies adapter = new AdapterBottomMovies(cursor, getActivity());
         adapter.setHasStableIds(true);
         mRecyclerView.setAdapter(adapter);
         int columnCount = getResources().getInteger(R.integer.list_column_count);
@@ -109,21 +105,49 @@ public class BottomMoviesFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void onSortTitle() {
+        MovieSorter.Sort.setSortString(TAG_SORT_TITLE);
+
+        getActivity().getLoaderManager().restartLoader(4, null, this);
+        Snackbar
+                .make(getView(), "Sorted by Title", Snackbar.LENGTH_LONG)
+                .setAction("OK", null)
+                .show();
 
     }
 
     @Override
     public void onSortByDate() {
+        MovieSorter.Sort.setSortString(TAG_SORT_DATE);
+
+        getActivity().getLoaderManager().restartLoader(4, null, this);
+        Snackbar
+                .make(getView(), "Sorted by Date", Snackbar.LENGTH_LONG)
+                .setAction("OK", null)
+                .show();
 
     }
 
     @Override
     public void onSortByRating() {
 
+        MovieSorter.Sort.setSortString(TAG_SORT_RATING);
+        getActivity().getLoaderManager().restartLoader(4, null, this);
+
+
+        Snackbar
+                .make(getView(), "Sorted by Rating", Snackbar.LENGTH_LONG)
+                .setAction("OK", null)
+                .show();
+
     }
 
     @Override
     public void onRefresh() {
+        refresh();
+    }
 
+    private void refresh() {
+        getActivity().startService(new Intent(getActivity(), MoviesService.class));
+        getActivity().getLoaderManager().restartLoader(4, null, this);
     }
 }

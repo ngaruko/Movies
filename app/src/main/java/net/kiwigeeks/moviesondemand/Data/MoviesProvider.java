@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,31 +19,16 @@ import java.util.List;
  * Created by itl on 26/07/2015.
  */
 public class MoviesProvider extends ContentProvider {
-    private SQLiteOpenHelper mOpenHelper;
-
-    interface Tables {
-
-        String IN_THEATERS = "in_theaters";
-
-        String COMING_SOON = "coming_soon";
-        String TOP_MOVIES = "top_movies";
-        String BOTTOM_MOVIES = "bottom_movies";
-    }
-
     private static final int IN_THEATERS = 0;
     private static final int IN_THEATERS__ID = 1;
-
-
     private static final int COMING_SOON = 2;
     private static final int COMING_SOON__ID = 3;
-
     private static final int TOP_MOVIES = 4;
     private static final int TOP_MOVIES__ID = 5;
-
     private static final int BOTTOM_MOVIES = 6;
     private static final int BOTTOM_MOVIES__ID = 7;
-
     private static final UriMatcher sUriMatcher = buildUriMatcher();
+    private SQLiteOpenHelper mOpenHelper;
 
     private static UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -225,7 +211,7 @@ public class MoviesProvider extends ContentProvider {
      * a {@link SQLiteDatabase} transaction. All changes will be rolled back if
      * any single one fails.
      */
-    public ContentProviderResult[] applyBatch(ArrayList<ContentProviderOperation> operations)
+    public ContentProviderResult[] applyBatch(@NonNull ArrayList<ContentProviderOperation> operations)
             throws OperationApplicationException {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         db.beginTransaction();
@@ -240,5 +226,14 @@ public class MoviesProvider extends ContentProvider {
         } finally {
             db.endTransaction();
         }
+    }
+
+    interface Tables {
+
+        String IN_THEATERS = "in_theaters";
+
+        String COMING_SOON = "coming_soon";
+        String TOP_MOVIES = "top_movies";
+        String BOTTOM_MOVIES = "bottom_movies";
     }
 }

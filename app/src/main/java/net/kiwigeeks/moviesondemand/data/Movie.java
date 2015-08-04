@@ -3,25 +3,31 @@ package net.kiwigeeks.moviesondemand.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/**
- * Created by itl on 2/07/2015.
- */
 public class Movie implements Parcelable {
 //Or use this library here:https://github.com/johncarl81/parceler
 
 
+    public static final Creator<Movie> CREATOR
+            = new Creator<Movie>() {
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
     private String id;
     private String releaseDate;
     private String title;
     private String rated;
     private String plot;
     private String urlPoster;
-
     private String rating;
     private String runtime;
     private String genres;
     private String trailerUrl;
-
+    private String urlIMDB;
 
     public Movie() {
     }
@@ -36,8 +42,23 @@ id=in.readString();
         runtime=in.toString();
         genres=in.readString();
         trailerUrl=in.toString();
+        urlIMDB = in.toString();
 
 
+    }
+
+    public Movie(String id, String releaseDate, String title, String rated, String plot, String urlPoster, String rating, String runtime, String genres, String trailerUrl, String urlIMDB) {
+        this.id = id;
+        this.releaseDate = releaseDate;
+        this.title = title;
+        this.rated = rated;
+        this.plot = plot;
+        this.urlPoster = urlPoster;
+        this.rating = rating;
+        this.runtime = runtime;
+        this.genres = genres;
+        this.trailerUrl = trailerUrl;
+        this.urlIMDB = urlIMDB;
     }
 
     public String getId() {
@@ -52,7 +73,9 @@ id=in.readString();
         return releaseDate;
     }
 
-
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
+    }
 
     public String getTitle() {
         return title;
@@ -94,25 +117,10 @@ id=in.readString();
         this.rating = rating;
     }
 
-    public Movie(String id, String releaseDate, String title, String rated, String plot, String urlPoster, String rating, String runtime, String genres, String trailerUrl) {
-        this.id = id;
-        this.releaseDate = releaseDate;
-        this.title = title;
-        this.rated = rated;
-        this.plot = plot;
-        this.urlPoster = urlPoster;
-        this.rating = rating;
-        this.runtime=runtime;
-        this.genres=genres;
-        this.trailerUrl=trailerUrl;
-    }
-
-
     @Override
     public int describeContents() {
         return 0;
     }
-
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
@@ -126,25 +134,9 @@ id=in.readString();
         dest.writeString(runtime);
         dest.writeString(genres);
         dest.writeString(trailerUrl);
+        dest.writeString(urlIMDB);
 
 
-    }
-
-
-    public static final Creator<Movie> CREATOR
-            = new Creator<Movie>() {
-        public Movie createFromParcel(Parcel in) {
-            return new Movie(in);
-        }
-
-        public Movie[] newArray(int size) {
-            return new Movie[size];
-        }
-    };
-
-
-    public void setReleaseDate(String releaseDate) {
-        this.releaseDate = releaseDate;
     }
 
     public String getRuntime() {
@@ -169,5 +161,13 @@ id=in.readString();
 
     public void setTrailerUrl(String trailerUrl) {
         this.trailerUrl = trailerUrl;
+    }
+
+    public String getUrlIMDB() {
+        return urlIMDB;
+    }
+
+    public void setUrlIMDB(String urlIMDB) {
+        this.urlIMDB = urlIMDB;
     }
 }

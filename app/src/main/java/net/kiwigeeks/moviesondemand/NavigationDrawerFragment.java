@@ -18,6 +18,8 @@ import android.widget.ImageButton;
 
 import com.androidquery.AQuery;
 
+import net.kiwigeeks.moviesondemand.adapters.DrawerAdapter;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,26 +30,34 @@ import java.util.List;
 public class NavigationDrawerFragment extends Fragment {
 
 
-    private DrawerAdapter adapter;
-
     private static final String PREF_FILE_NAME = "testPref";
     private static final String KEY_USER_LEARNED_DRAWER = "user_learned_drawer";
-
-    private ActionBarDrawerToggle mDrawerToggle;
+    public AQuery aq;
     DrawerLayout mDrawerLayout;
-
+    private DrawerAdapter adapter;
+    private ActionBarDrawerToggle mDrawerToggle;
     private boolean mUserLearnDrawer;
     private boolean mFromSavedInstance;
-
     private RecyclerView recycleView;
-
     private View containerView;
-    public AQuery aq;
 
     public NavigationDrawerFragment() {
         // Required empty public constructor
     }
 
+    public static void saveToPreferences(Context context, String preferenceName, String preferenceValue) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(preferenceName, preferenceValue);
+        editor.apply();
+
+    }
+
+    public static String readFromSharedPreferences(Context context, String preferenceName, String defaultValue) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE);
+        return sharedPreferences.getString(preferenceName, defaultValue);
+
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,7 +67,6 @@ public class NavigationDrawerFragment extends Fragment {
 
         if (savedInstanceState != null) mFromSavedInstance = true;
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -88,16 +97,12 @@ public class NavigationDrawerFragment extends Fragment {
         return layout;
     }
 
-
-
-
-
-    public static List<DrawerClass> getData() {
+    public List<DrawerClass> getData() {
         List<DrawerClass> data = new ArrayList<>();
 
-        String[] titles = {"Home","Favorites", "Watchlist", "Local", "Settings", "About the app"};
+        String[] titles = getResources().getStringArray(R.array.drawerItems);
 
-        int[] icons = {R.drawable.home, R.drawable.button_focused, R.drawable.button_focused,R.drawable.button_focused,R.drawable.button_focused, R.drawable.button_focused,R.drawable.button_focused,R.drawable.button_focused};
+        int[] icons = {R.drawable.home, R.drawable.button_focused, R.drawable.button_focused};
 
         for (int i = 0; i < titles.length  && i < icons.length; i++) {
             DrawerClass current = new DrawerClass();
@@ -114,7 +119,6 @@ public class NavigationDrawerFragment extends Fragment {
 
 
     }
-
 
     public void setUp(int fragmentId, DrawerLayout drawerLayout, final Toolbar toolbar) {
 
@@ -169,19 +173,5 @@ public class NavigationDrawerFragment extends Fragment {
 
             }
         });
-    }
-
-    public static void saveToPreferences(Context context, String preferenceName, String preferenceValue) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(preferenceName, preferenceValue);
-        editor.apply();
-
-    }
-
-    public static String readFromSharedPreferences(Context context, String preferenceName, String defaultValue) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE);
-        return sharedPreferences.getString(preferenceName, defaultValue);
-
     }
 }

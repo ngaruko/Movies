@@ -4,7 +4,7 @@
     <file url="file://$PROJECT_DIR$/app/src/main/java/net/kiwigeeks/moviesondemand/activities/MovieDetailActivity.java" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/net/kiwigeeks/moviesondemand/activities/MovieDetailFragment.java" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/net/kiwigeeks/moviesondemand/data/MovieLoader.java" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/net/kiwigeeks/moviesondemand/data/UpdaterService.java" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/net/kiwigeeks/moviesondemand/services/MoviesService.java" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/net/kiwigeeks/moviesondemand/utilities/DrawInsetsFrameLayout.java" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/net/kiwigeeks/moviesondemand/utilities/DynamicHeightNetworkImageView.java" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/net/kiwigeeks/moviesondemand/utilities/ImageLoaderHelper.java" charset="windows-1252" />

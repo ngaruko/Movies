@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
@@ -30,6 +31,7 @@ import net.kiwigeeks.moviesondemand.MainActivity;
 import net.kiwigeeks.moviesondemand.R;
 import net.kiwigeeks.moviesondemand.data.Movie;
 import net.kiwigeeks.moviesondemand.tasks.FetchMovieTask;
+import net.kiwigeeks.moviesondemand.utilities.Constants;
 import net.kiwigeeks.moviesondemand.utilities.DrawInsetsFrameLayout;
 import net.kiwigeeks.moviesondemand.utilities.ImageLoaderHelper;
 import net.kiwigeeks.moviesondemand.utilities.LogHelper;
@@ -40,14 +42,12 @@ import net.kiwigeeks.moviesondemand.utilities.ObservableScrollView;
  */
 public class MovieSearchActivityFragment extends Fragment implements MovieLoadedListener, View.OnClickListener {
 
-    private static final String TITLE_EXTRA ="title_extra" ;
-    private String mTitle;
-    public Movie mMovie;
-    private static final String TAG = "SearchMovieFragment";
-
     public static final String ARG_ITEM_ID = "in_theaters_id";
+    private static final String TITLE_EXTRA ="title_extra" ;
+    private static final String TAG = "SearchMovieFragment";
     private static final float PARALLAX_FACTOR = 1.25f;
-
+    public Movie mMovie;
+    private String mTitle;
     private Cursor mCursor;
     private long mItemId;
     private View mRootView;
@@ -67,6 +67,7 @@ public class MovieSearchActivityFragment extends Fragment implements MovieLoaded
     private TextView titleView;
     private TextView bylineView;
     private java.lang.String mPlot;
+    private String mUrlIMDB;
 
     public MovieSearchActivityFragment() {
     }
@@ -77,13 +78,6 @@ public class MovieSearchActivityFragment extends Fragment implements MovieLoaded
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-//        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-//        countryCode = pref
-//                .getString(getString(R.string.pref_country_key),
-//                        getString(R.string.pref_country_default));
-//
-//        //  countryCode="US";
 
 
         Intent intent = getActivity().getIntent();
@@ -136,16 +130,15 @@ public class MovieSearchActivityFragment extends Fragment implements MovieLoaded
 
 
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_movie_search, container, false);
 
-         titleView = (TextView) mRootView.findViewById(R.id.article_title);
-         bylineView = (TextView) mRootView.findViewById(R.id.article_byline);
+        titleView = (TextView) mRootView.findViewById(R.id.movie_title);
+        bylineView = (TextView) mRootView.findViewById(R.id.movie_byline);
         bylineView.setMovementMethod(new LinkMovementMethod());
-        bodyView = (TextView) mRootView.findViewById(R.id.article_body);
+        bodyView = (TextView) mRootView.findViewById(R.id.movie_synopsis);
 
 
         mDrawInsetsFrameLayout = (DrawInsetsFrameLayout)
@@ -157,16 +150,6 @@ public class MovieSearchActivityFragment extends Fragment implements MovieLoaded
             }
         });
 
-//        mScrollView = (ObservableScrollView) mRootView.findViewById(R.id.scrollview);
-//        mScrollView.setCallbacks(new ObservableScrollView.Callbacks() {
-//            @Override
-//            public void onScrollChanged() {
-//                mScrollY = mScrollView.getScrollY();
-//                getActivityCast().onUpButtonFloorChanged(mItemId, MovieDetailFragment.this);
-//                mPhotoContainerView.setTranslationY((int) (mScrollY - mScrollY / PARALLAX_FACTOR));
-//                updateStatusBar();
-//            }
-//        });
 
         mPhotoView = (ImageView) mRootView.findViewById(R.id.photo);
         mPhotoContainerView = mRootView.findViewById(R.id.photo_container);
@@ -178,7 +161,7 @@ public class MovieSearchActivityFragment extends Fragment implements MovieLoaded
             public void onClick(View view) {
                 startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(getActivity())
                         .setType("text/plain")
-                        .setText("Some sample text")
+                        .setText(mVideoUrl != Constants.NA ? mVideoUrl : mUrlIMDB)
                         .getIntent(), getString(R.string.action_share)));
             }
         });
@@ -201,6 +184,10 @@ public class MovieSearchActivityFragment extends Fragment implements MovieLoaded
 
 
             mVideoUrl=movie.getTrailerUrl();
+
+            mUrlIMDB = movie.getUrlIMDB();
+
+
 
 LogHelper.log("movie here: " + mVideoUrl);
             titleView.setText(movie.getTitle());
@@ -244,9 +231,6 @@ else bodyView.setText(Html.fromHtml(mPlot));
             });
 
 
-            // mVideoUrl= TrailerParser.getTrailerUrl(mCursor.getString(mTitleId));
-
-          //  mVideoUrl= TrailerParser.getTrailerUrl("The help");
 
 
         } else {
@@ -272,14 +256,17 @@ else bodyView.setText(Html.fromHtml(mPlot));
                 if(HomeFragment.signedIn) {
 
 
-
-                    startActivity(new Intent(Intent.ACTION_VIEW,
-                            Uri.parse(mVideoUrl)));
+                    if (mVideoUrl != Constants.NA && !mVideoUrl.isEmpty()) {
+                        startActivity(new Intent(Intent.ACTION_VIEW,
+                                Uri.parse(mVideoUrl)));
+                    } else {
+                        Toast.makeText(getActivity(), "No trailers available for this movie!",
+                                Toast.LENGTH_LONG).show();
+                    }
 
 
                 } else promptUserToSignIn();
 
-              // startActivity(new Intent(getActivity(),VideoPlayerActivity.class));
 
                 break;
             case R.id.full_synopsis_button:
