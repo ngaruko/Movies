@@ -31,6 +31,10 @@ public class MovieLoader extends CursorLoader {
         return new MovieLoader(context, MoviesContract.BottomMovies.buildDirUri());
     }
 
+    public static MovieLoader newAllFoundMoviesInstance(Context context) {
+        return new MovieLoader(context, MoviesContract.FoundMovies.buildDirUri());
+    }
+
 
 
 

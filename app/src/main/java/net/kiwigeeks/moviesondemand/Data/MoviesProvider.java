@@ -15,9 +15,7 @@ import android.support.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by itl on 26/07/2015.
- */
+
 public class MoviesProvider extends ContentProvider {
     private static final int IN_THEATERS = 0;
     private static final int IN_THEATERS__ID = 1;
@@ -27,6 +25,8 @@ public class MoviesProvider extends ContentProvider {
     private static final int TOP_MOVIES__ID = 5;
     private static final int BOTTOM_MOVIES = 6;
     private static final int BOTTOM_MOVIES__ID = 7;
+    private static final int FOUND_MOVIES = 8;
+    private static final int FOUND_MOVIES__ID = 9;
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private SQLiteOpenHelper mOpenHelper;
 
@@ -46,6 +46,9 @@ public class MoviesProvider extends ContentProvider {
 
         matcher.addURI(authority, "bottom_movies", BOTTOM_MOVIES);
         matcher.addURI(authority, "bottom_movies/#", BOTTOM_MOVIES__ID);
+
+        matcher.addURI(authority, "found_movies", FOUND_MOVIES);
+        matcher.addURI(authority, "found_movies/#", FOUND_MOVIES__ID);
 
 
         return matcher;
@@ -81,6 +84,12 @@ public class MoviesProvider extends ContentProvider {
                 return MoviesContract.BottomMovies.CONTENT_TYPE;
             case BOTTOM_MOVIES__ID:
                 return MoviesContract.BottomMovies.CONTENT_ITEM_TYPE;
+
+
+            case FOUND_MOVIES:
+                return MoviesContract.FoundMovies.CONTENT_TYPE;
+            case FOUND_MOVIES__ID:
+                return MoviesContract.FoundMovies.CONTENT_ITEM_TYPE;
 
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -130,6 +139,12 @@ public class MoviesProvider extends ContentProvider {
                 return MoviesContract.BottomMovies.buildItemUri(_id);
             }
 
+
+            case FOUND_MOVIES: {
+                final long _id = db.insertOrThrow(Tables.FOUND_MOVIES, null, values);
+                getContext().getContentResolver().notifyChange(uri, null);
+                return MoviesContract.FoundMovies.buildItemUri(_id);
+            }
 
             default: {
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -181,9 +196,6 @@ public class MoviesProvider extends ContentProvider {
             }
 
 
-
-
-
             case TOP_MOVIES: {
                 return builder.table(Tables.TOP_MOVIES);
             }
@@ -192,6 +204,9 @@ public class MoviesProvider extends ContentProvider {
                 return builder.table(Tables.TOP_MOVIES).where(MoviesContract.TopMovies._ID + "=?", _id);
             }
 
+
+
+
             case BOTTOM_MOVIES: {
                 return builder.table(Tables.BOTTOM_MOVIES);
             }
@@ -199,6 +214,17 @@ public class MoviesProvider extends ContentProvider {
                 final String _id = paths.get(1);
                 return builder.table(Tables.BOTTOM_MOVIES).where(MoviesContract.BottomMovies._ID + "=?", _id);
             }
+
+
+            case FOUND_MOVIES: {
+                return builder.table(Tables.FOUND_MOVIES);
+            }
+            case FOUND_MOVIES__ID: {
+                final String _id = paths.get(1);
+                return builder.table(Tables.FOUND_MOVIES).where(MoviesContract.BottomMovies._ID + "=?", _id);
+            }
+
+
 
             default: {
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -231,9 +257,9 @@ public class MoviesProvider extends ContentProvider {
     interface Tables {
 
         String IN_THEATERS = "in_theaters";
-
         String COMING_SOON = "coming_soon";
         String TOP_MOVIES = "top_movies";
         String BOTTOM_MOVIES = "bottom_movies";
+        String FOUND_MOVIES = "found_movies";
     }
 }

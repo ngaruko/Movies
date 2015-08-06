@@ -13,7 +13,7 @@ public class EndPoints {
     public static final String URL_MOVIE = "http://www.myapifilms.com/imdb?title= ";//Best of Enemies&trailer=1";
     public static final String URL_CHAR_QUESTION = "?";
     public static final String URL_CHAR_AMEPERSAND = "&";
-    public static final String WITH_TRAILER = " &trailer=1";
+    public static final String WITH_TRAILER = " &trailer=1&limit=10";
 
     public static final String URL_PARAM_END = "end=";
     private static final String TITLE_EQUALS = "title=";
@@ -37,6 +37,14 @@ public class EndPoints {
     public static String getRequestUrlBottomMovies() {
 
         return URL_BOTTOM_MOVIES;
+
+    }
+
+    public static String getRequestUrlFoundMovies(String title) {
+
+        return (URL_MOVIE
+                + title
+                + WITH_TRAILER).replaceAll("\\s+", "");
 
     }
 

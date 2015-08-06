@@ -13,20 +13,13 @@
         android:id="@+id/signing"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#B2EFFF">
+        android:background="@color/primaryColorDark">
 
 
-
-            <ImageButton
-                android:id="@+id/google_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/common_signin_button_text"
-                android:src="@drawable/btn_google_signin_normal" />
-
-
-
-
+        <TextView
+            android:id="@+id/sign_status"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
 
 

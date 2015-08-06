@@ -191,7 +191,7 @@ public class JSonParser {
                                 released = currentMovie.getString(KEY_RELEASE_DATE);
                             }
                             int releaseDate = 0;
-                            releaseDate = Integer.parseInt(released);
+                            releaseDate = released.isEmpty() ? releaseDate : Integer.parseInt(released);
 
                             if (currentMovie.has(KEY_TITLE) && !currentMovie.isNull(KEY_TITLE)) {
                                 title = currentMovie.getString(KEY_TITLE);
@@ -209,8 +209,11 @@ public class JSonParser {
 
                                 //TODO serialise this
                                 JSONArray genresArray = currentMovie.getJSONArray(KEY_GENRES);
+                                if (genresArray.length() == 0) return;
                                 if (genresArray.length() == 1)
                                     genres = genresArray.get(0).toString();
+
+
                                 else {
                                     String addGenres = null;
 

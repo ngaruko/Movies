@@ -86,7 +86,6 @@ public class InTheatersFragment extends Fragment implements   LoaderManager.Load
 
         mRecyclerView = (RecyclerView) mView.findViewById(R.id.in_theaters_recyclerView);
 
-
         return mView;
     }
 
@@ -101,7 +100,6 @@ public class InTheatersFragment extends Fragment implements   LoaderManager.Load
 
 
     }
-
 
 
     @Override

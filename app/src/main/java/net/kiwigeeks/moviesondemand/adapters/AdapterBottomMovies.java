@@ -1,10 +1,16 @@
 package net.kiwigeeks.moviesondemand.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,7 +23,6 @@ import android.widget.TextView;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 
-import net.kiwigeeks.moviesondemand.MainActivity;
 import net.kiwigeeks.moviesondemand.R;
 import net.kiwigeeks.moviesondemand.VolleySingleton;
 import net.kiwigeeks.moviesondemand.activities.MovieDetailActivity;
@@ -65,24 +70,51 @@ public class AdapterBottomMovies extends RecyclerView.Adapter<AdapterBottomMovie
         View view = mLayoutInflater.inflate(R.layout.bottom_movie_item_layout, parent, false);
 
         final ViewHolderMovies vh = new ViewHolderMovies(view);
+        final Activity selfContext = (Activity) context;
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
 
-                try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-                    ActivityOptionsCompat compat = ActivityOptionsCompat.makeSceneTransitionAnimation(new MainActivity(), null);
+                    Intent intent = new Intent(context, MovieDetailActivity.class);
 
-                    Intent i = new Intent(context, MovieDetailActivity.class);
-                    //Intent i = new Intent(context, MovieDetailActivity.class);
-                    Uri uri = MoviesContract.BottomMovies.buildItemUri(getItemId(vh.getAdapterPosition()));
-                    i.setData(uri);
+                    View imageView = view.findViewById(R.id.movieThumbnail);
+                    TextView textView = (TextView) view.findViewById(R.id.movie_title);
 
-                    context.startActivity(i, compat.toBundle());
+                    Bundle extras = new Bundle();
+                    extras.putInt("position", vh.getAdapterPosition());
+                    extras.putString("text", textView.getText().toString());
+                    intent.putExtras(extras);
 
-                } catch (Exception e) {
-                    Log.e("Intent Error", e.getMessage());
+                    Uri uri = MoviesContract.InTheater.buildItemUri(getItemId(vh.getAdapterPosition()));
+                    intent.setData(uri);
+
+                    ActivityOptionsCompat options =
+                            ActivityOptionsCompat.makeSceneTransitionAnimation(selfContext
+                                    , Pair.create((View) textView, ViewCompat.getTransitionName(textView))
+                                    , Pair.create(imageView, ViewCompat.getTransitionName(imageView))
+
+                            );
+                    ActivityCompat.startActivity(selfContext, intent, options.toBundle());
+
+
+                } else {
+
+
+                    try {
+
+
+                        Intent i = new Intent(context, MovieDetailActivity.class);
+                        Uri uri = MoviesContract.InTheater.buildItemUri(getItemId(vh.getAdapterPosition()));
+                        i.setData(uri);
+                        context.startActivity(i);
+
+
+                    } catch (Exception e) {
+                        Log.e("Intent Error", e.getMessage());
+                    }
                 }
 
                 Log.e("position", String.valueOf(getItemId(vh.getAdapterPosition())));
@@ -151,7 +183,7 @@ public class AdapterBottomMovies extends RecyclerView.Adapter<AdapterBottomMovie
             super(itemView);
 
             movieThumbnail = (ImageView) itemView.findViewById(R.id.movieThumbnail);
-            movieTitle = (TextView) itemView.findViewById(R.id.movieTitle);
+            movieTitle = (TextView) itemView.findViewById(R.id.movie_title);
             movieReleaseDate = (TextView) itemView.findViewById(R.id.movieReleaseDate);
             movieRating = (RatingBar) itemView.findViewById(R.id.movieRating);
         }

@@ -5,4 +5,5 @@ import net.kiwigeeks.moviesondemand.data.Movie;
 
 public interface MovieLoadedListener {
      void onMovieLoded(Movie movie);
+
 }

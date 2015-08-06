@@ -1,17 +1,10 @@
 package net.kiwigeeks.moviesondemand.adapters;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.util.Pair;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,10 +24,8 @@ import net.kiwigeeks.moviesondemand.data.MoviesContract;
 import net.kiwigeeks.moviesondemand.data.TopMovieLoader;
 import net.kiwigeeks.moviesondemand.utilities.Constants;
 
-/**
- * Created by itl on 1/08/2015.
- */
-public class AdapterTopMovies extends RecyclerView.Adapter<AdapterTopMovies.ViewHolderMovies> {
+
+public class AdapterFoundMovies extends RecyclerView.Adapter<AdapterFoundMovies.ViewHolderMovies> {
     private Cursor mCursor;
     private LayoutInflater mLayoutInflater;
 
@@ -43,7 +34,7 @@ public class AdapterTopMovies extends RecyclerView.Adapter<AdapterTopMovies.View
     private Context context;
 
 
-    public AdapterTopMovies(Cursor cursor, Context context) {
+    public AdapterFoundMovies(Cursor cursor, Context context) {
         this.context = context;
 
         mCursor = cursor;
@@ -72,55 +63,43 @@ public class AdapterTopMovies extends RecyclerView.Adapter<AdapterTopMovies.View
     @Override
     public ViewHolderMovies onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        View view = mLayoutInflater.inflate(R.layout.top_movie_item_layout, parent, false);
+        View view = mLayoutInflater.inflate(R.layout.found_movie_item_layout, parent, false);
 
         final ViewHolderMovies vh = new ViewHolderMovies(view);
 
-        final Activity selfContext = (Activity) context;
+
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                try {
+                    //todo: bundle movie details together and animate
 
-                    Intent intent = new Intent(context, MovieDetailActivity.class);
+                    ActivityOptionsCompat compat = ActivityOptionsCompat.makeSceneTransitionAnimation(new MovieDetailActivity(), null);
 
-                    View imageView = view.findViewById(R.id.movieThumbnail);
-                    TextView textView = (TextView) view.findViewById(R.id.movie_title);
-
-                    Bundle extras = new Bundle();
-                    extras.putInt("position", vh.getAdapterPosition());
-                    extras.putString("text", textView.getText().toString());
-                    intent.putExtras(extras);
-
-                    Uri uri = MoviesContract.InTheater.buildItemUri(getItemId(vh.getAdapterPosition()));
-                    intent.setData(uri);
-
-                    ActivityOptionsCompat options =
-                            ActivityOptionsCompat.makeSceneTransitionAnimation(selfContext
-                                    , Pair.create((View) textView, ViewCompat.getTransitionName(textView))
-                                    , Pair.create(imageView, ViewCompat.getTransitionName(imageView))
-
-                            );
-                    ActivityCompat.startActivity(selfContext, intent, options.toBundle());
+                    // ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation();
 
 
-                } else {
+                    Intent i = new Intent(context, MovieDetailActivity.class);
+//                 //for shared elements animation
+//
+//                    ActivityOptionsCompat options =
+//                            ActivityOptionsCompat.makeSceneTransitionAnimation(context
+//                                    , Pair.create((View) textView, ViewCompat.getTransitionName(textView))
+//                                    ,Pair.create(imageView, ViewCompat.getTransitionName(imageView))
+//
+//                            );
+
+                    Uri uri = MoviesContract.TopMovies.buildItemUri(getItemId(vh.getAdapterPosition()));
+                    i.setData(uri);
 
 
-                    try {
+                    context.startActivity(i, compat.toBundle());
 
 
-                        Intent i = new Intent(context, MovieDetailActivity.class);
-                        Uri uri = MoviesContract.InTheater.buildItemUri(getItemId(vh.getAdapterPosition()));
-                        i.setData(uri);
-                        context.startActivity(i);
-
-
-                    } catch (Exception e) {
-                        Log.e("Intent Error", e.getMessage());
-                    }
+                } catch (Exception e) {
+                    Log.e("Intent Error", e.getMessage());
                 }
 
                 Log.e("position", String.valueOf(getItemId(vh.getAdapterPosition())));
@@ -131,14 +110,11 @@ public class AdapterTopMovies extends RecyclerView.Adapter<AdapterTopMovies.View
 
     @Override
     public void onBindViewHolder(ViewHolderMovies holder, int position) {
+
+
+        //holder.movieThumbnail.setTransitionName("imageTransition");
+
         mCursor.moveToPosition(position);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ViewCompat.setTransitionName(holder.mCardView, "cardViewTransition" + position);
-            ViewCompat.setTransitionName(holder.movieThumbnail, "imageTransition" + position);
-            ViewCompat.setTransitionName(holder.movieTitle, "textTransition" + position);
-        }
-
         holder.movieTitle.setText(mCursor.getString(TopMovieLoader.Query.COLUMN_TITLE));
 
         //    holder.movieTitle.setText("TOP MOVIES");
@@ -188,7 +164,6 @@ public class AdapterTopMovies extends RecyclerView.Adapter<AdapterTopMovies.View
 
     public class ViewHolderMovies extends RecyclerView.ViewHolder {
 
-        private final CardView mCardView;
         ImageView movieThumbnail;
         TextView movieTitle;
         TextView movieReleaseDate;
@@ -197,7 +172,6 @@ public class AdapterTopMovies extends RecyclerView.Adapter<AdapterTopMovies.View
 
         public ViewHolderMovies(View itemView) {
             super(itemView);
-            mCardView = (CardView) itemView;
 
             movieThumbnail = (ImageView) itemView.findViewById(R.id.movieThumbnail);
             movieTitle = (TextView) itemView.findViewById(R.id.movie_title);

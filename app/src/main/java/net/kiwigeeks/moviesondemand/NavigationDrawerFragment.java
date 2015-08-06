@@ -3,7 +3,6 @@ package net.kiwigeeks.moviesondemand;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
@@ -14,9 +13,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-
-import com.androidquery.AQuery;
 
 import net.kiwigeeks.moviesondemand.adapters.DrawerAdapter;
 
@@ -32,7 +28,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     private static final String PREF_FILE_NAME = "testPref";
     private static final String KEY_USER_LEARNED_DRAWER = "user_learned_drawer";
-    public AQuery aq;
+
     DrawerLayout mDrawerLayout;
     private DrawerAdapter adapter;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -77,23 +73,16 @@ public class NavigationDrawerFragment extends Fragment {
         recycleView = (RecyclerView) layout.findViewById(R.id.recycler_view);
 
         //set adapter
+//
+//        TextView status= (TextView) layout.findViewById(R.id.sign_status);
+//       // status.setText("Signed in as :" + );
+
 
         adapter = new DrawerAdapter(getActivity(), getData());
 
         recycleView.setAdapter(adapter);
         recycleView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        aq = new AQuery(getActivity());
-
-               //aq.id(R.id.sign_out_button).clicked(this, "buttonClicked");
-  ImageButton button = (ImageButton) layout.findViewById(R.id.google_button);
-
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), MainActivity.class);
-                getActivity().startActivity(intent);
-            }
-        });
         return layout;
     }
 

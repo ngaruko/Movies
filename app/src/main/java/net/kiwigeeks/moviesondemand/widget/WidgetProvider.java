@@ -10,9 +10,7 @@ import android.util.Log;
 import net.kiwigeeks.moviesondemand.services.MoviesService;
 import net.kiwigeeks.moviesondemand.utilities.LogHelper;
 
-/**
- * Created by itl on 27/07/2015.
- */
+
 public class WidgetProvider extends AppWidgetProvider {
 
 

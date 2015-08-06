@@ -9,9 +9,13 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ShareCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.graphics.Palette;
 import android.text.Html;
@@ -48,7 +52,7 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
     private Cursor mCursor;
     private long mItemId;
     private View mRootView;
-   // private int mMutedColor = 0xFF333333;
+    // private int mMutedColor = 0xFF333333;
     private ObservableScrollView mScrollView;
     private DrawInsetsFrameLayout mDrawInsetsFrameLayout;
     private ColorDrawable mStatusBarColorDrawable;
@@ -60,6 +64,12 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
     private int mStatusBarFullOpacityBottom;
     private TextView bodyView;
     private CharSequence mUrlIMDB;
+    private Movie mMovie;
+    private String mPlot;
+    private long mReleaseDate;
+    private String mRated;
+    private String mGenres;
+    private String mRuntime;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -92,13 +102,27 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
+
+        //for transition
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            getActivity().getWindow().requestFeature(android.view.Window.FEATURE_CONTENT_TRANSITIONS);
+            getActivity().getWindow().requestFeature(android.view.Window.FEATURE_ACTIVITY_TRANSITIONS);
+            getActivity().getWindow().requestFeature(android.view.Window.FEATURE_ACTION_BAR_OVERLAY);
+        }
+
+
         super.onCreate(savedInstanceState);
 
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             mItemId = getArguments().getLong(ARG_ITEM_ID);
-
-
         }
+        if (savedInstanceState != null && savedInstanceState.containsKey("id")) {
+            mItemId = savedInstanceState.getLong("id");
+        }
+
+        //todo: savee instabcve
 
         mIsCard = getResources().getBoolean(R.bool.detail_is_card);
         mStatusBarFullOpacityBottom = getResources().getDimensionPixelSize(
@@ -114,13 +138,39 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-              getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().initLoader(0, null, this);
     }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+
+        savedInstanceState.putLong("id", mItemId);
+
+
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
+
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            Bundle extras = getActivity().getIntent().getExtras();
+            int mPositionRef = extras.getInt("position");
+            View base = mRootView.findViewById(R.id.detail_layout);
+            View image = mRootView.findViewById(R.id.movieThumbnail);
+            TextView text = (TextView) mRootView.findViewById(R.id.movie_title);
+            text.setText(extras.getString("text"));
+            ViewCompat.setTransitionName(base, "cardViewTransition" + mPositionRef);
+            ViewCompat.setTransitionName(image, "imageTransition" + mPositionRef);
+            ViewCompat.setTransitionName(text, "textTransition" + mPositionRef);
+        }
+
+
         mDrawInsetsFrameLayout = (DrawInsetsFrameLayout)
                 mRootView.findViewById(R.id.draw_insets_frame_layout);
         mDrawInsetsFrameLayout.setOnInsetsCallback(new DrawInsetsFrameLayout.OnInsetsCallback() {
@@ -141,8 +191,15 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
             }
         });
 
-        mPhotoView = (ImageView) mRootView.findViewById(R.id.photo);
+        mPhotoView = (ImageView) mRootView.findViewById(R.id.movieThumbnail);
         mPhotoContainerView = mRootView.findViewById(R.id.photo_container);
+
+        mPhotoContainerView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showMovieDetails();
+            }
+        });
 
         mStatusBarColorDrawable = new ColorDrawable(0);
 
@@ -157,7 +214,7 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
         });
 
 
-      mRootView.findViewById(R.id.view_trailer_button).setOnClickListener(this);
+        mRootView.findViewById(R.id.view_trailer_button).setOnClickListener(this);
         mRootView.findViewById(R.id.full_movie_button).setOnClickListener(this);
         mRootView.findViewById(R.id.full_synopsis_button).setOnClickListener(this);
 
@@ -197,20 +254,25 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
 
             mTitleId = MovieLoader.Query.COLUMN_TITLE;
             mTitle = mCursor.getString(mTitleId);
+            mReleaseDate = mCursor.getLong(MovieLoader.Query.COLUMN_RELEASE_DATE);
+            mRated = mCursor.getString(MovieLoader.Query.COLUMN_RATED);
+            mGenres = mCursor.getString(MovieLoader.Query.COLUMN_GENRES);
+            mRuntime = mCursor.getString(MovieLoader.Query.COLUMN_RUNTIME);
             titleView.setText(mTitle);
 
             mUrlIMDB = "http://www.imdb.com/title/" + mCursor.getString(MovieLoader.Query.COLUMN_IMDB_ID);
 
-            bylineView.setText( mCursor.getLong(MovieLoader.Query.COLUMN_RELEASE_DATE)
+            bylineView.setText(mCursor.getLong(MovieLoader.Query.COLUMN_RELEASE_DATE)
                             + "  "
                             + mCursor.getString(MovieLoader.Query.COLUMN_RATED)
-                          );
-            String plot=mCursor.getString(MovieLoader.Query.COLUMN_PLOT);
+            );
+            mPlot = mCursor.getString(MovieLoader.Query.COLUMN_PLOT);
 
-            if (plot.length()>200)
-                plot=plot.substring(0, 200);
-
-                bodyView.setText(Html.fromHtml(plot));
+            if (mPlot.length() > 200) {
+                bodyView.setText(Html.fromHtml(mPlot.substring(0, 200)));
+            } else {
+                bodyView.setText(Html.fromHtml(mPlot));
+            }
 
             ImageLoaderHelper.getInstance(getActivity()).getImageLoader()
                     .get(mCursor.getString(MovieLoader.Query.COLUMN_URL_THUMBNAIL), new ImageLoader.ImageListener() {
@@ -219,11 +281,12 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
                             Bitmap bitmap = imageContainer.getBitmap();
                             if (bitmap != null) {
                                 Palette p = Palette.generate(bitmap, 12);
-                              //  mMutedColor = p.getDarkMutedColor(0xFF333333);
+                                //  mMutedColor = p.getDarkMutedColor(0xFF333333);
                                 mPhotoView.setImageBitmap(imageContainer.getBitmap());
 
+
                                 mRootView.findViewById(R.id.meta_bar);
-                                      //  .setBackgroundColor(mMutedColor);
+                                //  .setBackgroundColor(mMutedColor);
                                 updateStatusBar();
                             }
                         }
@@ -235,12 +298,10 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
                     });
 
 
-
-
         } else {
             mRootView.setVisibility(View.GONE);
             titleView.setText("N/A");
-            bylineView.setText("N/A" );
+            bylineView.setText("N/A");
             bodyView.setText("N/A");
         }
     }
@@ -291,42 +352,84 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
         switch (v.getId()) {
             case R.id.view_trailer_button:
 
-                new FetchMovieTask(new MovieLoadedListener() {
-                    @Override
-                    public void onMovieLoded(Movie movie) {
+                ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(getActivity().CONNECTIVITY_SERVICE);
+                NetworkInfo ni = cm.getActiveNetworkInfo();
+                if (ni != null && ni.isConnected()) {
+                    new FetchMovieTask(new MovieLoadedListener() {
+                        @Override
+                        public void onMovieLoded(Movie movie) {
 
-                        if (movie == null) return;
-                        mVideoUrl = movie.getTrailerUrl();
+                            if (movie == null) return;
+                            mVideoUrl = movie.getTrailerUrl();
+                            Log.e("Trailer", mVideoUrl);
+
+                            Log.e("Clikced", "Trailer coming");
+
+                            if (HomeFragment.signedIn) {
+                                if (mVideoUrl != null && !mVideoUrl.isEmpty()) {
+
+                                    if (isAdded()) {
+                                        startActivity(new Intent(Intent.ACTION_VIEW,
+                                                Uri.parse(mVideoUrl)));
+                                    }
+                                } else {
+                                    Toast.makeText(getActivity(), "No trailers available for this movie!",
+                                            Toast.LENGTH_LONG).show();
+                                }
+
+                            } else promptUserToSignIn();
 
 
-                        Log.e("Clikced", "Trailer coming");
+                        }
+                    }).execute(mTitle);
+                } else {
 
-                        if (HomeFragment.signedIn) {
-                            if (mVideoUrl != null && !mVideoUrl.isEmpty()) {
-                                startActivity(new Intent(Intent.ACTION_VIEW,
-                                        Uri.parse(mVideoUrl)));
-                            } else {
-                                Toast.makeText(getActivity(), "No trailers available for this movie!",
-                                        Toast.LENGTH_LONG).show();
-                            }
-                        } else promptUserToSignIn();
+                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
+                    alertDialog.setTitle(" No internet");
+                    alertDialog.setMessage("Please check your internet connection");
+                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    alertDialog.show();
 
-
-                    }
-                }).execute(mTitle);
+                }
 
 
                 break;
             case R.id.full_synopsis_button:
-                bodyView.setText(Html.fromHtml(mCursor.getString(MovieLoader.Query.COLUMN_PLOT)));
-
-
+                bodyView.setText(Html.fromHtml(mPlot));
                 break;
+
+
             case R.id.full_movie_button:
                 showFullMovie();
-
                 break;
+
         }
+    }
+
+    private void showMovieDetails() {
+
+
+        String title = mTitle.toUpperCase();
+        String details = mReleaseDate + "\t" + "\t" + mRated + "\t" + "\t" + mRuntime + "\n"
+                + mGenres + "\t" + "\t" + "\n" + "\n"
+                + "PLOT: " + "\n" + mPlot;
+
+
+        AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
+        alertDialog.setTitle(title);
+        alertDialog.setMessage(details);
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
     }
 
     private void showFullMovie() {
@@ -355,12 +458,12 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
                     }
                 });
 
-      alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,"Cancel",
-              new DialogInterface.OnClickListener() {
-                  public void onClick(DialogInterface dialog, int which) {
-                      dialog.dismiss();
-                  }
-              });
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
 
         alertDialog.show();
 

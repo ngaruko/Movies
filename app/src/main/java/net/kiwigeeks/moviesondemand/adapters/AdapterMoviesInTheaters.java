@@ -1,10 +1,17 @@
 package net.kiwigeeks.moviesondemand.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
+import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,7 +24,6 @@ import android.widget.TextView;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 
-import net.kiwigeeks.moviesondemand.MainActivity;
 import net.kiwigeeks.moviesondemand.R;
 import net.kiwigeeks.moviesondemand.VolleySingleton;
 import net.kiwigeeks.moviesondemand.activities.MovieDetailActivity;
@@ -29,77 +35,113 @@ import net.kiwigeeks.moviesondemand.utilities.Constants;
  * Created by itl on 26/07/2015.
  */
 public class AdapterMoviesInTheaters extends RecyclerView.Adapter<AdapterMoviesInTheaters.ViewHolderMovies> {
-        private Cursor mCursor;
-        private LayoutInflater mLayoutInflater;
+    private Cursor mCursor;
+    private LayoutInflater mLayoutInflater;
 
-        private VolleySingleton mVolleySingleton;
-        private ImageLoader mImageLoader;
-        private Context context;
+    private VolleySingleton mVolleySingleton;
+    private ImageLoader mImageLoader;
+    private Context context;
 
 
-        public AdapterMoviesInTheaters(Cursor cursor, Context context) {
+    public AdapterMoviesInTheaters(Cursor cursor, Context context) {
         this.context = context;
 
+
         mCursor = cursor;
-                try {
-                        mLayoutInflater = LayoutInflater.from(context);
-                } catch (Exception e) {
-                        e.printStackTrace();
-                }
+        try {
+            mLayoutInflater = LayoutInflater.from(context);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         mVolleySingleton = VolleySingleton.getInstance();
         mImageLoader = mVolleySingleton.getImageLoader();
 
 
-        }
+    }
 
 
-        @Override
-        public long getItemId(int position) {
+    @Override
+    public long getItemId(int position) {
         try {
-                mCursor.moveToPosition(position);
+            mCursor.moveToPosition(position);
         } catch (Exception e) {
-                e.printStackTrace();
+            e.printStackTrace();
         }
         return mCursor.getLong(MovieLoader.Query._ID);
-        }
+    }
 
-        @Override
-        public ViewHolderMovies onCreateViewHolder(ViewGroup parent, int viewType) {
+    @Override
+    public ViewHolderMovies onCreateViewHolder(ViewGroup parent, int viewType) {
 
-                View view = mLayoutInflater.inflate(R.layout.movie_item_layout, parent, false);
+        View view = mLayoutInflater.inflate(R.layout.movie_item_layout, parent, false);
 
-                final ViewHolderMovies vh = new ViewHolderMovies(view);
+        final ViewHolderMovies vh = new ViewHolderMovies(view);
+        //  final AppCompatActivity selfContext=
+        final Activity selfContext = (Activity) context;
+
+
         view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
+            @Override
+            public void onClick(View view) {
 
 
-                        try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-                                ActivityOptionsCompat compat = ActivityOptionsCompat.makeSceneTransitionAnimation(new MainActivity(), null);
+                    Intent intent = new Intent(context, MovieDetailActivity.class);
 
-                                Intent i = new Intent(context, MovieDetailActivity.class);
-                                //Intent i = new Intent(context, MovieDetailActivity.class);
-                                Uri uri = MoviesContract.InTheater.buildItemUri(getItemId(vh.getAdapterPosition()));
-                                i.setData(uri);
+                    View imageView = view.findViewById(R.id.movieThumbnail);
+                    TextView textView = (TextView) view.findViewById(R.id.movie_title);
 
-                                context.startActivity(i, compat.toBundle());
+                    Bundle extras = new Bundle();
+                    extras.putInt("position", vh.getAdapterPosition());
+                    extras.putString("text", textView.getText().toString());
+                    intent.putExtras(extras);
+
+                    Uri uri = MoviesContract.InTheater.buildItemUri(getItemId(vh.getAdapterPosition()));
+                    intent.setData(uri);
+
+                    ActivityOptionsCompat options =
+                            ActivityOptionsCompat.makeSceneTransitionAnimation(selfContext
+                                    , Pair.create((View) textView, ViewCompat.getTransitionName(textView))
+                                    , Pair.create(imageView, ViewCompat.getTransitionName(imageView))
+
+                            );
+                    ActivityCompat.startActivity(selfContext, intent, options.toBundle());
 
 
-                        } catch (Exception e) {
-                                Log.e("Intent Error", e.getMessage());
-                        }
+                } else {
 
-                        Log.e("position", String.valueOf(getItemId(vh.getAdapterPosition())));
+
+                    try {
+
+
+                        Intent i = new Intent(context, MovieDetailActivity.class);
+                        Uri uri = MoviesContract.InTheater.buildItemUri(getItemId(vh.getAdapterPosition()));
+                        i.setData(uri);
+                        context.startActivity(i);
+
+
+                    } catch (Exception e) {
+                        Log.e("Intent Error", e.getMessage());
+                    }
                 }
+
+                Log.e("position", String.valueOf(getItemId(vh.getAdapterPosition())));
+            }
         });
         return vh;
-        }
+    }
 
-        @Override
-        public void onBindViewHolder(ViewHolderMovies holder, int position) {
+    @Override
+    public void onBindViewHolder(ViewHolderMovies holder, int position) {
         mCursor.moveToPosition(position);
         holder.movieTitle.setText(mCursor.getString(MovieLoader.Query.COLUMN_TITLE));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ViewCompat.setTransitionName(holder.mCardView, "cardViewTransition" + position);
+            ViewCompat.setTransitionName(holder.movieThumbnail, "imageTransition" + position);
+            ViewCompat.setTransitionName(holder.movieTitle, "textTransition" + position);
+        }
 
 
         // holder.type.setText(mCursor.getString(MovieLoader.Query.COLUMN_RELEASE_DATE));
@@ -107,11 +149,11 @@ public class AdapterMoviesInTheaters extends RecyclerView.Adapter<AdapterMoviesI
         Double rating = mCursor.getDouble(MovieLoader.Query.COLUMN_RATING);
 
         if (rating == -1) {
-                holder.movieRating.setRating(0.0F);
-                holder.movieRating.setAlpha(0.5F); //only 50% visible
+            holder.movieRating.setRating(0.0F);
+            holder.movieRating.setAlpha(0.5F); //only 50% visible
         } else {
-                holder.movieRating.setRating((float) (rating / 2.0F));
-                holder.movieRating.setAlpha(1.0F);
+            holder.movieRating.setRating((float) (rating / 2.0F));
+            holder.movieRating.setAlpha(1.0F);
         }
 
         //load url
@@ -119,47 +161,48 @@ public class AdapterMoviesInTheaters extends RecyclerView.Adapter<AdapterMoviesI
         String thummbailUrl = mCursor.getString(MovieLoader.Query.COLUMN_URL_THUMBNAIL);
 
         loadImages(holder, thummbailUrl);
-        }
+    }
 
-        private void loadImages(final ViewHolderMovies holder, String thumbailUrl) {
+    private void loadImages(final ViewHolderMovies holder, String thumbailUrl) {
         if (!thumbailUrl.equals(Constants.NA)) {
-                mImageLoader.get(thumbailUrl, new ImageLoader.ImageListener() {
-                        @Override
-                        public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
-                                holder.movieThumbnail.setImageBitmap(response.getBitmap());
-                        }
-
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                                //have a default image here
-
-                        }
-                });
-        }
-        }
-
-
-        @Override
-        public int getItemCount() {
-        return mCursor == null ? 0 : mCursor.getCount();
-        }
-
-
-        public class ViewHolderMovies extends RecyclerView.ViewHolder {
-
-                ImageView movieThumbnail;
-                TextView movieTitle;
-                TextView movieReleaseDate;
-                RatingBar movieRating;
-
-
-                public ViewHolderMovies(View itemView) {
-                        super(itemView);
-
-                        movieThumbnail = (ImageView) itemView.findViewById(R.id.movieThumbnail);
-                        movieTitle = (TextView) itemView.findViewById(R.id.movieTitle);
-                        movieReleaseDate = (TextView) itemView.findViewById(R.id.movieReleaseDate);
-                        movieRating = (RatingBar) itemView.findViewById(R.id.movieRating);
+            mImageLoader.get(thumbailUrl, new ImageLoader.ImageListener() {
+                @Override
+                public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
+                    holder.movieThumbnail.setImageBitmap(response.getBitmap());
                 }
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    //have a default image here
+
+                }
+            });
+        }
+    }
+
+
+    @Override
+    public int getItemCount() {
+        return mCursor == null ? 0 : mCursor.getCount();
+    }
+
+
+    public class ViewHolderMovies extends RecyclerView.ViewHolder {
+
+        private final CardView mCardView;
+        ImageView movieThumbnail;
+        TextView movieTitle;
+        TextView movieReleaseDate;
+        RatingBar movieRating;
+
+
+        public ViewHolderMovies(View itemView) {
+            super(itemView);
+            mCardView = (CardView) itemView;
+            movieThumbnail = (ImageView) itemView.findViewById(R.id.movieThumbnail);
+            movieTitle = (TextView) itemView.findViewById(R.id.movie_title);
+            movieReleaseDate = (TextView) itemView.findViewById(R.id.movieReleaseDate);
+            movieRating = (RatingBar) itemView.findViewById(R.id.movieRating);
+        }
     }
 }

@@ -40,7 +40,7 @@ import net.kiwigeeks.moviesondemand.utilities.ObservableScrollView;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MovieSearchActivityFragment extends Fragment implements MovieLoadedListener, View.OnClickListener {
+public class MovieSearchFragment extends Fragment implements MovieLoadedListener, View.OnClickListener {
 
     public static final String ARG_ITEM_ID = "in_theaters_id";
     private static final String TITLE_EXTRA ="title_extra" ;
@@ -69,7 +69,7 @@ public class MovieSearchActivityFragment extends Fragment implements MovieLoaded
     private java.lang.String mPlot;
     private String mUrlIMDB;
 
-    public MovieSearchActivityFragment() {
+    public MovieSearchFragment() {
     }
 
 
@@ -93,15 +93,6 @@ public class MovieSearchActivityFragment extends Fragment implements MovieLoaded
 
 
         } else mTitle = getArguments().getString("title");
-
-//new GetMovieTask(this).execute();
-//        if (savedInstanceState == null || !savedInstanceState.containsKey("movie"))
-//            searchForMovie(mTitle);
-//
-//
-//        else {
-//            mMovie = savedInstanceState.getParcelable("movie");
-//        }
 
 
     }
@@ -151,7 +142,7 @@ public class MovieSearchActivityFragment extends Fragment implements MovieLoaded
         });
 
 
-        mPhotoView = (ImageView) mRootView.findViewById(R.id.photo);
+        mPhotoView = (ImageView) mRootView.findViewById(R.id.movieThumbnail);
         mPhotoContainerView = mRootView.findViewById(R.id.photo_container);
 
         mStatusBarColorDrawable = new ColorDrawable(0);
@@ -176,6 +167,7 @@ public class MovieSearchActivityFragment extends Fragment implements MovieLoaded
 
     @Override
     public void onMovieLoded(Movie movie) {
+
 
         if (movie != null) {
             mRootView.setAlpha(0);

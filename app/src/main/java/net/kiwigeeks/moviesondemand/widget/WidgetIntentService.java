@@ -13,13 +13,11 @@ import android.widget.ImageView;
 import android.widget.RemoteViews;
 
 import com.android.volley.toolbox.ImageLoader;
-import com.androidquery.AQuery;
 
 import net.kiwigeeks.moviesondemand.MainActivity;
 import net.kiwigeeks.moviesondemand.R;
 import net.kiwigeeks.moviesondemand.VolleySingleton;
 import net.kiwigeeks.moviesondemand.data.MoviesContract;
-import net.kiwigeeks.moviesondemand.utilities.Constants;
 
 
 /**
@@ -52,13 +50,11 @@ public class WidgetIntentService extends IntentService {
     private VolleySingleton mVolleySingleton;
     private ImageLoader mImageLoader;
     private Context context;
-    private AQuery aq;
+
     private String thumbnailUrl;
     private ImageView mPhotoView;
     private String title;
     private String releaseDate;
-    private int[] appWidgetIds;
-    private AppWidgetManager appWidgetManager;
     private String genres;
 
 
@@ -76,8 +72,8 @@ public class WidgetIntentService extends IntentService {
         mImageLoader = mVolleySingleton.getImageLoader();
 
         // Retrieve all of the Today widget ids: these are the widgets we need to update
-        appWidgetManager = AppWidgetManager.getInstance(this);
-        appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this,
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this,
                 WidgetProvider.class));
         Uri movieUri = MoviesContract.InTheater.buildDirUri();
         Cursor data = getContentResolver().query(movieUri, MOVIES_COLUMNS, null,
@@ -126,35 +122,6 @@ public class WidgetIntentService extends IntentService {
 
         views.setTextViewText(R.id.wigetGenres, genres);
 
-        if (!thumbnailUrl.equals(Constants.NA)) {
-//            mImageLoader.get(thumbnailUrl, new ImageLoader.ImageListener() {
-//                @Override
-//                public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
-//
-//                    views.setImageViewBitmap(R.id.movieThumbnail, response.getBitmap());
-//
-//                }
-//
-//                @Override
-//                public void onErrorResponse(VolleyError error) {
-//                    //have a default image here
-//                    Log.e("Volley Image Error", error.getMessage());
-//                }
-//            });
-
-//
-//            Picasso.with(getBaseContext())
-//                    .load(thumbnailUrl)
-//                    .resize(50, 50)
-//                    .centerCrop().into(views,R.id.widgetThumbnail,appWidgetIds);
-
-
-        }
-//
-//                aq = new AQuery(this);
-//
-//                aq.id(R.id.widgetThumbnail).image(thumbnailUrl);
-//               Log.e("Imagethumbnail",thumbnailUrl);
         // Create an Intent to launch MainActivity
         Intent launchIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, launchIntent, 0);

@@ -18,6 +18,7 @@ public class MovieSearchActivity extends AppCompatActivity implements MovieLoade
 
 
     public Movie mMovie;
+    private View mProgressbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +30,8 @@ public class MovieSearchActivity extends AppCompatActivity implements MovieLoade
             slide.setDuration(5000);
             getWindow().setEnterTransition(slide);
             getWindow().setReturnTransition(TransitionInflater.from(this).inflateTransition(R.transition.content_transition_a));
+            getWindow().setSharedElementExitTransition(TransitionInflater.from(this).inflateTransition(R.transition.shared_element_transition_a));
+
         }
 
 
@@ -40,7 +43,7 @@ public class MovieSearchActivity extends AppCompatActivity implements MovieLoade
 
 
         setContentView(R.layout.activity_movie_search);
-
+//mProgressbar=findViewById(R.id.progressbar);
 
     }
 
@@ -66,7 +69,7 @@ public class MovieSearchActivity extends AppCompatActivity implements MovieLoade
 
     @Override
     public void onMovieLoded(Movie movie) {
-
+//mProgressbar.setVisibility(View.GONE);
         mMovie = new Movie();
 
 

@@ -18,6 +18,7 @@ public class MoviesContract {
 
     public static final String PATH_INTHEATERS = "in_theaters";
     public static final String PATH_BOTTOM_MOVIES = "bottom_movies";
+    public static final String PATH_FOUND_MOVIES = "found_movies";
 
     private static String sortString;
 
@@ -37,6 +38,8 @@ public class MoviesContract {
         String COLUMN_RUNTIME = "runtime";
         String COLUMN_SIMPLE_PLOT = "simple_plot";
         String COLUMN_IMDB_ID = "idIMDB";
+        String COLUMN_URLIMDB="urlIMDB";
+        String COLUMN_TRAILER_URL="trailerUrl";
     }
 
 
@@ -197,6 +200,40 @@ public class MoviesContract {
          */
         public static Uri buildItemUri(long _id) {
             return BASE_CONTENT_URI.buildUpon().appendPath(PATH_BOTTOM_MOVIES).appendPath(Long.toString(_id)).build();
+        }
+
+        /**
+         * Read item ID movie detail URI.
+         */
+        public static long getItemId(Uri itemUri) {
+            return Long.parseLong(itemUri.getPathSegments().get(1));
+        }
+
+
+    }
+
+
+    public static final class FoundMovies implements MoviesColumns {
+
+
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_FOUND_MOVIES).build();
+
+        public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FOUND_MOVIES;
+        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FOUND_MOVIES;
+
+
+        /**
+         * Matches: /movies/
+         */
+        public static Uri buildDirUri() {
+            return BASE_CONTENT_URI.buildUpon().appendPath(PATH_FOUND_MOVIES).build();
+        }
+
+        /**
+         * Matches: /movies/[_id]/
+         */
+        public static Uri buildItemUri(long _id) {
+            return BASE_CONTENT_URI.buildUpon().appendPath(PATH_FOUND_MOVIES).appendPath(Long.toString(_id)).build();
         }
 
         /**

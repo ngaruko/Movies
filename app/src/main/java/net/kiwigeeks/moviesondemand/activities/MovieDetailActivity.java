@@ -13,7 +13,6 @@ import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.transition.Slide;
-import android.transition.TransitionInflater;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +21,6 @@ import android.view.WindowInsets;
 import net.kiwigeeks.moviesondemand.R;
 import net.kiwigeeks.moviesondemand.data.MovieLoader;
 import net.kiwigeeks.moviesondemand.data.MoviesContract;
-
 
 
 public class MovieDetailActivity extends AppCompatActivity
@@ -39,17 +37,23 @@ public class MovieDetailActivity extends AppCompatActivity
     private MyPagerAdapter mPagerAdapter;
     private View mUpButtonContainer;
     private View mUpButton;
+    private View mProgressbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+
 //for transition
         if (Build.VERSION.SDK_INT >= 21) {
             Slide slide = new Slide();
             slide.setDuration(5000);
             getWindow().setEnterTransition(slide);
-            getWindow().setReturnTransition(TransitionInflater.from(this).inflateTransition(R.transition.content_transition_a));
+
+            getWindow().requestFeature(android.view.Window.FEATURE_CONTENT_TRANSITIONS);
+            getWindow().requestFeature(android.view.Window.FEATURE_ACTIVITY_TRANSITIONS);
+            getWindow().requestFeature(android.view.Window.FEATURE_ACTION_BAR_OVERLAY);
         }
+
+        super.onCreate(savedInstanceState);
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -61,6 +65,8 @@ public class MovieDetailActivity extends AppCompatActivity
         mUpButtonContainer = findViewById(R.id.up_container);
 
         getLoaderManager().initLoader(0, null, this);
+
+        mProgressbar = findViewById(R.id.progressbar);
 
         mPagerAdapter = new MyPagerAdapter(getFragmentManager());
         mPager = (ViewPager) findViewById(R.id.detail_pager);
@@ -91,7 +97,6 @@ public class MovieDetailActivity extends AppCompatActivity
         });
 
 
-
         mUpButton = findViewById(R.id.action_up);
         mUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,12 +119,21 @@ public class MovieDetailActivity extends AppCompatActivity
             });
         }
 
-        if (savedInstanceState == null) {
+
+        if (savedInstanceState != null && savedInstanceState.containsKey("id")) {
+            mSelectedItemId = savedInstanceState.getLong("id");
+        } else {
             if (getIntent() != null && getIntent().getData() != null) {
                 mStartId = MoviesContract.InTheater.getItemId(getIntent().getData());
                 mSelectedItemId = mStartId;
             }
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong("id", mSelectedItemId);
     }
 
     @Override
@@ -129,6 +143,10 @@ public class MovieDetailActivity extends AppCompatActivity
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+
+        mProgressbar.setVisibility(View.GONE);
+
+
         mCursor = cursor;
         mPagerAdapter.notifyDataSetChanged();
 
@@ -166,7 +184,7 @@ public class MovieDetailActivity extends AppCompatActivity
         mUpButton.setTranslationY(Math.min(mSelectedItemUpButtonFloor - upButtonNormalBottom, 0));
     }
 
-    private class MyPagerAdapter extends FragmentStatePagerAdapter  {
+    private class MyPagerAdapter extends FragmentStatePagerAdapter {
         public MyPagerAdapter(FragmentManager fm) {
             super(fm);
         }
