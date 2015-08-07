@@ -51,7 +51,7 @@
     <string name="title_activity_signing">SigningActivity</string>
     <string name="title_activity_home">HomeActivity</string>
     <string name="app_desc">With modern advances in technology, the good old “brick-and-mortar” DVD rental store does not make any sense. I mean, who needs to drive a mile to the store, spend an hour walking up and down the store aisles looking for a movie that he could get from the comfort of his home. For a fraction of a price and in better quality than the often scratched DVDs we get from the DVD store. This app helps movie lovers, not only browse what is available on the market and in theatres, but also to watch trailers for free and full movies for a fraction of the DVD cost either on subscription basis or on a pay-as-you-use model.</string>
-    <string name="title_activity_movie_detail">MovieDetailActivity</string>
+    <string name="title_activity_movie_detail">Movie Poster</string>
     <string name="action_share">Share</string>
 
 
@@ -90,4 +90,10 @@ When a user selects a movie, he is given options to watch the trailer (if signed
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_transition">TransitionActivity</string>
+    <string name="title_activity_detail">Movie Poster</string>
+    <string name="action_transition">Show Animation</string>
+
+    <string name="transition_string">transition</string>
+    <string name="full_details">More Details</string>
 </resources>

@@ -37,6 +37,7 @@ public class FoundMoviesFragment extends Fragment implements MoviesFoundListener
     private OnFragmentInteractionListener mListener;
     private String mTitle;
     private RecyclerView mRecyclerView;
+    private View mProgressbar;
 
 
     public FoundMoviesFragment() {
@@ -65,7 +66,7 @@ public class FoundMoviesFragment extends Fragment implements MoviesFoundListener
 
             LogHelper.log("Intent received: " + mTitle);
 
-            new SearchMoviesTask(this, getActivity()).execute(mTitle);
+            new SearchMoviesTask(this, getActivity()).execute(mTitle, "&limit=10");
 
 
         } else mTitle = getArguments().getString("title");
@@ -84,7 +85,11 @@ public class FoundMoviesFragment extends Fragment implements MoviesFoundListener
         activity.setSupportActionBar(toolbar);
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        getActivity().setTitle(mTitle);
+
+
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        mProgressbar = view.findViewById(R.id.progressbar);
 
         getActivity().getLoaderManager().initLoader(6, null, this);
 
@@ -123,6 +128,9 @@ public class FoundMoviesFragment extends Fragment implements MoviesFoundListener
 
     @Override
     public void onMoviesFound() {
+
+        mProgressbar.setVisibility(View.GONE);
+
 
     }
 

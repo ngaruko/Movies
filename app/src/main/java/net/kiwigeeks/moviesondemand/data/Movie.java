@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Movie implements Parcelable {
-//Or use this library here:https://github.com/johncarl81/parceler
+
 
 
     public static final Creator<Movie> CREATOR
@@ -17,32 +17,33 @@ public class Movie implements Parcelable {
             return new Movie[size];
         }
     };
-    private String id;
-    private String releaseDate;
-    private String title;
-    private String rated;
-    private String plot;
-    private String urlPoster;
-    private String rating;
-    private String runtime;
-    private String genres;
-    private String trailerUrl;
-    private String urlIMDB;
+    public String id;
+    public String releaseDate;
+    public String title;
+    public String rated;
+    public String plot;
+    public String urlPoster;
+    public String rating;
+    public String runtime;
+    public String genres;
+    public String trailerUrl;
+    public String urlIMDB;
 
     public Movie() {
     }
 
     public Movie(Parcel in) {
-id=in.readString();
-        title=in.readString();
-        urlPoster=in.readString();
-        rated=in.readString();
-        rating=in.readString();
-        releaseDate=in.readString();
-        runtime=in.toString();
-        genres=in.readString();
-        trailerUrl=in.toString();
-        urlIMDB = in.toString();
+        id = in.readString();
+        title = in.readString();
+        urlPoster = in.readString();
+        rated = in.readString();
+        rating = in.readString();
+        releaseDate = in.readString();
+        runtime = in.readString();
+        genres = in.readString();
+        trailerUrl = in.readString();
+        urlIMDB = in.readString();
+        plot = in.readString();
 
 
     }
@@ -52,13 +53,14 @@ id=in.readString();
         this.releaseDate = releaseDate;
         this.title = title;
         this.rated = rated;
-        this.plot = plot;
+
         this.urlPoster = urlPoster;
         this.rating = rating;
         this.runtime = runtime;
         this.genres = genres;
         this.trailerUrl = trailerUrl;
         this.urlIMDB = urlIMDB;
+        this.plot = plot;
     }
 
     public String getId() {
@@ -135,6 +137,8 @@ id=in.readString();
         dest.writeString(genres);
         dest.writeString(trailerUrl);
         dest.writeString(urlIMDB);
+        dest.writeString(plot);
+
 
 
     }

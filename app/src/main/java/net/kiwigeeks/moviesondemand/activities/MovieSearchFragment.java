@@ -124,7 +124,7 @@ public class MovieSearchFragment extends Fragment implements MovieLoadedListener
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mRootView = inflater.inflate(R.layout.fragment_movie_search, container, false);
+        mRootView = inflater.inflate(R.layout.fragment_found_movies, container, false);
 
         titleView = (TextView) mRootView.findViewById(R.id.movie_title);
         bylineView = (TextView) mRootView.findViewById(R.id.movie_byline);

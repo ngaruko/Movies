@@ -19,9 +19,9 @@ import org.json.JSONArray;
  */
 public class FetchMovieTask extends AsyncTask<String, Void, Movie> {
 
+    public JSONArray response;
     private VolleySingleton volleySingleton;
     private RequestQueue requestQueue;
-    public JSONArray response;
     private MovieLoadedListener myComponent;
 
 
@@ -38,7 +38,8 @@ public class FetchMovieTask extends AsyncTask<String, Void, Movie> {
 
         String title=params[0];
 
-       String url= EndPoints.getRequestMovieUrl(title);
+
+        String url= EndPoints.getRequestMovieUrl(title);
       // String url="http://www.myapifilms.com/imdb?title=thehelp&trailer=1";
         try {
 

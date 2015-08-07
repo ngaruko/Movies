@@ -1,16 +1,9 @@
 package net.kiwigeeks.moviesondemand.adapters;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.util.Pair;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,7 +18,7 @@ import com.android.volley.toolbox.ImageLoader;
 
 import net.kiwigeeks.moviesondemand.R;
 import net.kiwigeeks.moviesondemand.VolleySingleton;
-import net.kiwigeeks.moviesondemand.activities.MovieDetailActivity;
+import net.kiwigeeks.moviesondemand.activities.MoviePosterActivity;
 import net.kiwigeeks.moviesondemand.data.MovieLoader;
 import net.kiwigeeks.moviesondemand.data.MoviesContract;
 import net.kiwigeeks.moviesondemand.utilities.Constants;
@@ -70,43 +63,17 @@ public class AdapterBottomMovies extends RecyclerView.Adapter<AdapterBottomMovie
         View view = mLayoutInflater.inflate(R.layout.bottom_movie_item_layout, parent, false);
 
         final ViewHolderMovies vh = new ViewHolderMovies(view);
-        final Activity selfContext = (Activity) context;
+
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-
-                    Intent intent = new Intent(context, MovieDetailActivity.class);
-
-                    View imageView = view.findViewById(R.id.movieThumbnail);
-                    TextView textView = (TextView) view.findViewById(R.id.movie_title);
-
-                    Bundle extras = new Bundle();
-                    extras.putInt("position", vh.getAdapterPosition());
-                    extras.putString("text", textView.getText().toString());
-                    intent.putExtras(extras);
-
-                    Uri uri = MoviesContract.InTheater.buildItemUri(getItemId(vh.getAdapterPosition()));
-                    intent.setData(uri);
-
-                    ActivityOptionsCompat options =
-                            ActivityOptionsCompat.makeSceneTransitionAnimation(selfContext
-                                    , Pair.create((View) textView, ViewCompat.getTransitionName(textView))
-                                    , Pair.create(imageView, ViewCompat.getTransitionName(imageView))
-
-                            );
-                    ActivityCompat.startActivity(selfContext, intent, options.toBundle());
-
-
-                } else {
-
 
                     try {
 
 
-                        Intent i = new Intent(context, MovieDetailActivity.class);
+                        Intent i = new Intent(context, MoviePosterActivity.class);
                         Uri uri = MoviesContract.InTheater.buildItemUri(getItemId(vh.getAdapterPosition()));
                         i.setData(uri);
                         context.startActivity(i);
@@ -115,7 +82,7 @@ public class AdapterBottomMovies extends RecyclerView.Adapter<AdapterBottomMovie
                     } catch (Exception e) {
                         Log.e("Intent Error", e.getMessage());
                     }
-                }
+
 
                 Log.e("position", String.valueOf(getItemId(vh.getAdapterPosition())));
             }
@@ -128,7 +95,6 @@ public class AdapterBottomMovies extends RecyclerView.Adapter<AdapterBottomMovie
         mCursor.moveToPosition(position);
         holder.movieTitle.setText(mCursor.getString(MovieLoader.Query.COLUMN_TITLE));
 
-        // holder.type.setText(mCursor.getString(MovieLoader.Query.COLUMN_RELEASE_DATE));
         holder.movieReleaseDate.setText(mCursor.getString(MovieLoader.Query.COLUMN_GENRES));
         Double rating = mCursor.getDouble(MovieLoader.Query.COLUMN_RATING);
 

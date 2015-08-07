@@ -249,6 +249,7 @@ public class MainActivity extends AppCompatActivity {
 
             switch (id) {
 
+
                 case R.id.refresh:
                     try {
                         ((SortListener) fragment).onRefresh();
@@ -257,6 +258,8 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                     break;
+
+
                 case R.id.action_sort_title:
                     try {
                         Log.e("title", "tile");

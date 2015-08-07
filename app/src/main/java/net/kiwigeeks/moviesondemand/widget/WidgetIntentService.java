@@ -7,6 +7,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.ImageView;
@@ -14,10 +16,14 @@ import android.widget.RemoteViews;
 
 import com.android.volley.toolbox.ImageLoader;
 
-import net.kiwigeeks.moviesondemand.MainActivity;
 import net.kiwigeeks.moviesondemand.R;
 import net.kiwigeeks.moviesondemand.VolleySingleton;
+import net.kiwigeeks.moviesondemand.activities.MoviePosterActivity;
 import net.kiwigeeks.moviesondemand.data.MoviesContract;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 
 /**
@@ -28,13 +34,14 @@ import net.kiwigeeks.moviesondemand.data.MoviesContract;
  */
 public class WidgetIntentService extends IntentService {
 
-
+    public static final int COL_ID = 0;
     public static final int COL_TITLE = 1;
     public static final int COL_GENRES = 2;
     public static final int COL_RATED = 3;
     public static final int COL_THUMBNAIL = 4;
     public static final int COL_RELEASE_DATE = 5;
     public static final int COL_RATING = 6;
+
     // A "projection" defines the columns that will be returned for each row
     private static final String[] MOVIES_COLUMNS = {
 
@@ -46,7 +53,7 @@ public class WidgetIntentService extends IntentService {
             MoviesContract.InTheater.COLUMN_RELEASE_DATE,
             MoviesContract.InTheater.COLUMN_RATING
     };
-    public double _ID = 0;
+    public long id = 0;
     private VolleySingleton mVolleySingleton;
     private ImageLoader mImageLoader;
     private Context context;
@@ -94,10 +101,10 @@ public class WidgetIntentService extends IntentService {
 
             thumbnailUrl = data.getString(COL_THUMBNAIL);
             genres = data.getString(COL_GENRES);
+            id = data.getLong(COL_ID);
 
             data.close();
 
-            // Perform this loop procedure for each Today widget
             for (int appWidgetId : appWidgetIds)
 
                 populateWidget(appWidgetManager, appWidgetId);
@@ -108,22 +115,32 @@ public class WidgetIntentService extends IntentService {
 
     private void populateWidget(AppWidgetManager appWidgetManager, int appWidgetId) {
         int layoutId = R.layout.appwidget;
-        //RemoteViews views = new RemoteViews(context.getPackageName(), layoutId);
+
         final RemoteViews views = new RemoteViews(getPackageName(), layoutId);
 
         //TODO change the widget icon to generic icon
 
         views.setImageViewResource(R.id.widgetThumbnail, R.drawable.movie);
-//                views.setImageViewResource(R.id.away_crest, Utilies.getTeamCrestByTeamName(away));
-
 
         views.setTextViewText(R.id.widgetMovieTitle, title);
         views.setTextViewText(R.id.widgetMovieReleaseDate, releaseDate);
 
         views.setTextViewText(R.id.wigetGenres, genres);
 
+
+        try {
+
+            Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(thumbnailUrl).getContent());
+            views.setImageViewBitmap(R.id.widgetThumbnail, bitmap);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         // Create an Intent to launch MainActivity
-        Intent launchIntent = new Intent(this, MainActivity.class);
+        Intent launchIntent = new Intent(this, MoviePosterActivity.class);
+        Uri uri = MoviesContract.InTheater.buildItemUri(id);
+        launchIntent.setData(uri);
+
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, launchIntent, 0);
         views.setOnClickPendingIntent(R.id.appWidget, pendingIntent);
 

@@ -64,7 +64,7 @@
         </service>
 
         <activity
-            android:name=".activities.MovieDetailActivity"
+            android:name=".activities.MoviePosterActivity"
             android:label="@string/title_activity_movie_detail"
             android:parentActivityName=".MainActivity" >
             <intent-filter>
@@ -90,16 +90,16 @@
         <activity
             android:name=".activities.MovieSearchActivity"
             android:label="@string/title_activity_movie_search" >
-
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-
         <activity
             android:name=".utilities.DialogClass"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-
+        <activity
+            android:name=".activities.DetailActivity"
+            android:label="@string/title_activity_detail"></activity>
     </application>
 
 </manifest>

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,7 +18,7 @@ import com.android.volley.toolbox.ImageLoader;
 
 import net.kiwigeeks.moviesondemand.R;
 import net.kiwigeeks.moviesondemand.VolleySingleton;
-import net.kiwigeeks.moviesondemand.activities.MovieDetailActivity;
+import net.kiwigeeks.moviesondemand.activities.MoviePosterActivity;
 import net.kiwigeeks.moviesondemand.data.MoviesContract;
 import net.kiwigeeks.moviesondemand.data.TopMovieLoader;
 import net.kiwigeeks.moviesondemand.utilities.Constants;
@@ -74,28 +73,15 @@ public class AdapterFoundMovies extends RecyclerView.Adapter<AdapterFoundMovies.
 
 
                 try {
-                    //todo: bundle movie details together and animate
 
-                    ActivityOptionsCompat compat = ActivityOptionsCompat.makeSceneTransitionAnimation(new MovieDetailActivity(), null);
+                    Intent i = new Intent(context, MoviePosterActivity.class);
 
-                    // ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation();
-
-
-                    Intent i = new Intent(context, MovieDetailActivity.class);
-//                 //for shared elements animation
-//
-//                    ActivityOptionsCompat options =
-//                            ActivityOptionsCompat.makeSceneTransitionAnimation(context
-//                                    , Pair.create((View) textView, ViewCompat.getTransitionName(textView))
-//                                    ,Pair.create(imageView, ViewCompat.getTransitionName(imageView))
-//
-//                            );
 
                     Uri uri = MoviesContract.TopMovies.buildItemUri(getItemId(vh.getAdapterPosition()));
                     i.setData(uri);
 
 
-                    context.startActivity(i, compat.toBundle());
+                    context.startActivity(i);
 
 
                 } catch (Exception e) {

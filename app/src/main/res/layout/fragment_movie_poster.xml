@@ -24,8 +24,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:adjustViewBounds="true"
+                    android:clickable="true"
                     android:contentDescription="@string/movie_thumbnail"
-                    android:transitionName="MyTransition" />
+
+                    android:transitionName="@string/transition_string" />
 
 
 
@@ -104,28 +106,14 @@
                     android:orientation="horizontal"
                     android:padding="2dip"
                     >
-                    <Button
-                        android:id="@+id/view_trailer_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:contentDescription="@string/view_trailer"
-                        android:text="@string/view_trailer"
-                         />
+
 
                     <Button
-                        android:id="@+id/full_synopsis_button"
+                        android:id="@+id/full_movie_detail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:contentDescription="@string/full_synopsis"
-                        android:text="@string/full_synopsis"
-                         />
-
-                    <Button
-                        android:id="@+id/full_movie_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:contentDescription="@string/full_movie"
-                        android:text="@string/full_movie"
+                        android:contentDescription="@string/full_details"
+                        android:text="@string/full_details"
                          />
 
                 </LinearLayout>

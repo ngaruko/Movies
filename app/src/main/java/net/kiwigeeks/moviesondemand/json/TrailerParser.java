@@ -8,7 +8,6 @@ import com.android.volley.RequestQueue;
 import net.kiwigeeks.moviesondemand.VolleySingleton;
 import net.kiwigeeks.moviesondemand.data.Movie;
 import net.kiwigeeks.moviesondemand.utilities.Constants;
-import net.kiwigeeks.moviesondemand.utilities.EndPoints;
 import net.kiwigeeks.moviesondemand.utilities.LogHelper;
 
 import org.json.JSONArray;
@@ -48,47 +47,7 @@ public class TrailerParser {
         this.context = context;
     }
 
-    public static String getTrailerUrl(String title) {
 
-        JSONArray response = Requestor.requestMoviesJSON(requestQueue, EndPoints.getRequestMovieUrl(title));
-
-
-        String videoUrl = Constants.NA;
-        if (response != null && response.length() > 0) {
-
-
-            try {
-
-
-                    JSONObject body = (JSONObject) response.get(0);
-
-                    try {
-
-
-                        JSONObject trailer;
-                        if (body.has(KEY_TRAILER)) {
-                            trailer = body.getJSONObject(KEY_TRAILER);
-
-
-                            JSONArray qualities = trailer.getJSONArray(KEY_QUALITIES);
-                            JSONObject videoUrlObject = (JSONObject) qualities.get(0);
-                            videoUrl = videoUrlObject.getString(KEY_VIDEO_URL);
-                        }
-                        return videoUrl;
-
-
-                    } catch (JSONException e) {
-                        Log.e("Error updating content.", "Error updating content.", e);
-                    }
-
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-        }
-        return videoUrl;
-    }
 
 
     public static Movie parseSearchMovie(JSONArray response) {

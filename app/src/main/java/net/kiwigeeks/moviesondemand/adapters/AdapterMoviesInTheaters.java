@@ -26,7 +26,7 @@ import com.android.volley.toolbox.ImageLoader;
 
 import net.kiwigeeks.moviesondemand.R;
 import net.kiwigeeks.moviesondemand.VolleySingleton;
-import net.kiwigeeks.moviesondemand.activities.MovieDetailActivity;
+import net.kiwigeeks.moviesondemand.activities.MoviePosterActivity;
 import net.kiwigeeks.moviesondemand.data.MovieLoader;
 import net.kiwigeeks.moviesondemand.data.MoviesContract;
 import net.kiwigeeks.moviesondemand.utilities.Constants;
@@ -87,7 +87,7 @@ public class AdapterMoviesInTheaters extends RecyclerView.Adapter<AdapterMoviesI
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-                    Intent intent = new Intent(context, MovieDetailActivity.class);
+                    Intent intent = new Intent(context, MoviePosterActivity.class);
 
                     View imageView = view.findViewById(R.id.movieThumbnail);
                     TextView textView = (TextView) view.findViewById(R.id.movie_title);
@@ -115,7 +115,7 @@ public class AdapterMoviesInTheaters extends RecyclerView.Adapter<AdapterMoviesI
                     try {
 
 
-                        Intent i = new Intent(context, MovieDetailActivity.class);
+                        Intent i = new Intent(context, MoviePosterActivity.class);
                         Uri uri = MoviesContract.InTheater.buildItemUri(getItemId(vh.getAdapterPosition()));
                         i.setData(uri);
                         context.startActivity(i);
@@ -136,12 +136,6 @@ public class AdapterMoviesInTheaters extends RecyclerView.Adapter<AdapterMoviesI
     public void onBindViewHolder(ViewHolderMovies holder, int position) {
         mCursor.moveToPosition(position);
         holder.movieTitle.setText(mCursor.getString(MovieLoader.Query.COLUMN_TITLE));
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ViewCompat.setTransitionName(holder.mCardView, "cardViewTransition" + position);
-            ViewCompat.setTransitionName(holder.movieThumbnail, "imageTransition" + position);
-            ViewCompat.setTransitionName(holder.movieTitle, "textTransition" + position);
-        }
 
 
         // holder.type.setText(mCursor.getString(MovieLoader.Query.COLUMN_RELEASE_DATE));

@@ -2,21 +2,16 @@ package net.kiwigeeks.moviesondemand.activities;
 
 import android.app.Fragment;
 import android.app.LoaderManager;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.ShareCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.graphics.Palette;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -26,62 +21,58 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 
-import net.kiwigeeks.moviesondemand.Callbacks.MovieLoadedListener;
-import net.kiwigeeks.moviesondemand.MainActivity;
 import net.kiwigeeks.moviesondemand.R;
 import net.kiwigeeks.moviesondemand.data.Movie;
 import net.kiwigeeks.moviesondemand.data.MovieLoader;
-import net.kiwigeeks.moviesondemand.tasks.FetchMovieTask;
 import net.kiwigeeks.moviesondemand.utilities.DrawInsetsFrameLayout;
 import net.kiwigeeks.moviesondemand.utilities.ImageLoaderHelper;
 import net.kiwigeeks.moviesondemand.utilities.ObservableScrollView;
 
 
-public class MovieDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
+public class MoviePosterFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
     public static final String ARG_ITEM_ID = "in_theaters_id";
-    private static final String TAG = "MovieDetailFragment";
-    private static final float PARALLAX_FACTOR = 1.25f;
+    public static final String TAG = "MoviePosterFragment";
+    public static final float PARALLAX_FACTOR = 1.25f;
     public int mTitleId;
     public String mTitle;
     public String mVideoUrl;
-    private Cursor mCursor;
-    private long mItemId;
-    private View mRootView;
-    // private int mMutedColor = 0xFF333333;
-    private ObservableScrollView mScrollView;
-    private DrawInsetsFrameLayout mDrawInsetsFrameLayout;
-    private ColorDrawable mStatusBarColorDrawable;
-    private int mTopInset;
-    private View mPhotoContainerView;
-    private ImageView mPhotoView;
-    private int mScrollY;
-    private boolean mIsCard = false;
-    private int mStatusBarFullOpacityBottom;
-    private TextView bodyView;
-    private CharSequence mUrlIMDB;
-    private Movie mMovie;
-    private String mPlot;
-    private long mReleaseDate;
-    private String mRated;
-    private String mGenres;
-    private String mRuntime;
+    public Cursor mCursor;
+    public long mItemId;
+    public View mRootView;
+    // public int mMutedColor = 0xFF333333;
+    public ObservableScrollView mScrollView;
+    public DrawInsetsFrameLayout mDrawInsetsFrameLayout;
+    public ColorDrawable mStatusBarColorDrawable;
+    public int mTopInset;
+    public View mPhotoContainerView;
+    public ImageView mPhotoView;
+    public int mScrollY;
+    public boolean mIsCard = false;
+    public int mStatusBarFullOpacityBottom;
+    public TextView bodyView;
+    public CharSequence mUrlIMDB;
+    public Movie mMovie;
+    public String mPlot;
+    public long mReleaseDate;
+    public String mRated;
+    public String mGenres;
+    public String mRuntime;
+    public View mDetailLayout;
+    public String mpPhotoUrl;
+    public String mRating;
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
-    public MovieDetailFragment() {
+
+    public MoviePosterFragment() {
     }
 
-    public static MovieDetailFragment newInstance(long itemId) {
+    public static MoviePosterFragment newInstance(long itemId) {
         Bundle arguments = new Bundle();
         arguments.putLong(ARG_ITEM_ID, itemId);
-        MovieDetailFragment fragment = new MovieDetailFragment();
+        MoviePosterFragment fragment = new MoviePosterFragment();
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -102,15 +93,15 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
-
-        //for transition
-
-        if (Build.VERSION.SDK_INT >= 21) {
-            getActivity().getWindow().requestFeature(android.view.Window.FEATURE_CONTENT_TRANSITIONS);
-            getActivity().getWindow().requestFeature(android.view.Window.FEATURE_ACTIVITY_TRANSITIONS);
-            getActivity().getWindow().requestFeature(android.view.Window.FEATURE_ACTION_BAR_OVERLAY);
-        }
+//
+//
+//        //for transition
+//
+//        if (Build.VERSION.SDK_INT >= 21) {
+//            getActivity().getWindow().requestFeature(android.view.Window.FEATURE_CONTENT_TRANSITIONS);
+//            getActivity().getWindow().requestFeature(android.view.Window.FEATURE_ACTIVITY_TRANSITIONS);
+//            getActivity().getWindow().requestFeature(android.view.Window.FEATURE_ACTION_BAR_OVERLAY);
+//        }
 
 
         super.onCreate(savedInstanceState);
@@ -130,8 +121,8 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
         setHasOptionsMenu(true);
     }
 
-    public MovieDetailActivity getActivityCast() {
-        return (MovieDetailActivity) getActivity();
+    public MoviePosterActivity getActivityCast() {
+        return (MoviePosterActivity) getActivity();
     }
 
     @Override
@@ -155,20 +146,7 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mRootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
-
-
-        if (Build.VERSION.SDK_INT >= 21) {
-            Bundle extras = getActivity().getIntent().getExtras();
-            int mPositionRef = extras.getInt("position");
-            View base = mRootView.findViewById(R.id.detail_layout);
-            View image = mRootView.findViewById(R.id.movieThumbnail);
-            TextView text = (TextView) mRootView.findViewById(R.id.movie_title);
-            text.setText(extras.getString("text"));
-            ViewCompat.setTransitionName(base, "cardViewTransition" + mPositionRef);
-            ViewCompat.setTransitionName(image, "imageTransition" + mPositionRef);
-            ViewCompat.setTransitionName(text, "textTransition" + mPositionRef);
-        }
+        mRootView = inflater.inflate(R.layout.fragment_movie_poster, container, false);
 
 
         mDrawInsetsFrameLayout = (DrawInsetsFrameLayout)
@@ -185,7 +163,7 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
             @Override
             public void onScrollChanged() {
                 mScrollY = mScrollView.getScrollY();
-                getActivityCast().onUpButtonFloorChanged(mItemId, MovieDetailFragment.this);
+                getActivityCast().onUpButtonFloorChanged(mItemId, MoviePosterFragment.this);
                 mPhotoContainerView.setTranslationY((int) (mScrollY - mScrollY / PARALLAX_FACTOR));
                 updateStatusBar();
             }
@@ -193,13 +171,14 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
 
         mPhotoView = (ImageView) mRootView.findViewById(R.id.movieThumbnail);
         mPhotoContainerView = mRootView.findViewById(R.id.photo_container);
-
-        mPhotoContainerView.setOnClickListener(new View.OnClickListener() {
+        mDetailLayout = mRootView.findViewById(R.id.detail_layout);
+        mPhotoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showMovieDetails();
             }
         });
+
 
         mStatusBarColorDrawable = new ColorDrawable(0);
 
@@ -214,9 +193,10 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
         });
 
 
-        mRootView.findViewById(R.id.view_trailer_button).setOnClickListener(this);
-        mRootView.findViewById(R.id.full_movie_button).setOnClickListener(this);
-        mRootView.findViewById(R.id.full_synopsis_button).setOnClickListener(this);
+        // mRootView.findViewById(R.id.view_trailer_button).setOnClickListener(this);
+        mRootView.findViewById(R.id.full_movie_detail).setOnClickListener(this);
+        // mRootView.findViewById(R.id.full_synopsis_button).setOnClickListener(this);
+
 
         bindViews();
         updateStatusBar();
@@ -258,6 +238,10 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
             mRated = mCursor.getString(MovieLoader.Query.COLUMN_RATED);
             mGenres = mCursor.getString(MovieLoader.Query.COLUMN_GENRES);
             mRuntime = mCursor.getString(MovieLoader.Query.COLUMN_RUNTIME);
+            mpPhotoUrl = mCursor.getString(MovieLoader.Query.COLUMN_URL_THUMBNAIL);
+            mRating = mCursor.getString(MovieLoader.Query.COLUMN_RATING);
+            mPlot = mCursor.getString(MovieLoader.Query.COLUMN_PLOT);
+
             titleView.setText(mTitle);
 
             mUrlIMDB = "http://www.imdb.com/title/" + mCursor.getString(MovieLoader.Query.COLUMN_IMDB_ID);
@@ -266,7 +250,7 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
                             + "  "
                             + mCursor.getString(MovieLoader.Query.COLUMN_RATED)
             );
-            mPlot = mCursor.getString(MovieLoader.Query.COLUMN_PLOT);
+
 
             if (mPlot.length() > 200) {
                 bodyView.setText(Html.fromHtml(mPlot.substring(0, 200)));
@@ -350,122 +334,60 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.view_trailer_button:
-
-                ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(getActivity().CONNECTIVITY_SERVICE);
-                NetworkInfo ni = cm.getActiveNetworkInfo();
-                if (ni != null && ni.isConnected()) {
-                    new FetchMovieTask(new MovieLoadedListener() {
-                        @Override
-                        public void onMovieLoded(Movie movie) {
-
-                            if (movie == null) return;
-                            mVideoUrl = movie.getTrailerUrl();
-                            Log.e("Trailer", mVideoUrl);
-
-                            Log.e("Clikced", "Trailer coming");
-
-                            if (HomeFragment.signedIn) {
-                                if (mVideoUrl != null && !mVideoUrl.isEmpty()) {
-
-                                    if (isAdded()) {
-                                        startActivity(new Intent(Intent.ACTION_VIEW,
-                                                Uri.parse(mVideoUrl)));
-                                    }
-                                } else {
-                                    Toast.makeText(getActivity(), "No trailers available for this movie!",
-                                            Toast.LENGTH_LONG).show();
-                                }
-
-                            } else promptUserToSignIn();
 
 
-                        }
-                    }).execute(mTitle);
-                } else {
-
-                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
-                    alertDialog.setTitle(" No internet");
-                    alertDialog.setMessage("Please check your internet connection");
-                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            });
-                    alertDialog.show();
-
-                }
-
-
-                break;
-            case R.id.full_synopsis_button:
-                bodyView.setText(Html.fromHtml(mPlot));
-                break;
-
-
-            case R.id.full_movie_button:
-                showFullMovie();
+            case R.id.full_movie_detail:
+                showMovieDetails();
                 break;
 
         }
     }
 
+
     private void showMovieDetails() {
+        Intent intent = new Intent(getActivity(), DetailActivity.class);
+        Log.e("Title", mTitle);
+        Log.e("Plot", mPlot);
+        mMovie = new Movie();
+        mMovie.setPlot(mPlot);
+        mMovie.setTitle(mTitle);
+
+        mMovie.setTrailerUrl(mVideoUrl);
+        mMovie.setGenres(mGenres);
+        mMovie.setReleaseDate(String.valueOf(mReleaseDate));
+        mMovie.setUrlPoster(mpPhotoUrl);
+        mMovie.setId(String.valueOf(mItemId));
+        mMovie.setRuntime(mRuntime);
+        mMovie.setRating(mRating);
+        mMovie.setRated(mRated);
 
 
-        String title = mTitle.toUpperCase();
-        String details = mReleaseDate + "\t" + "\t" + mRated + "\t" + "\t" + mRuntime + "\n"
-                + mGenres + "\t" + "\t" + "\n" + "\n"
-                + "PLOT: " + "\n" + mPlot;
+        Log.e("genre", mGenres);
+//        Log.e("trailer", mVideoUrl);
+        Log.e("Plot", mMovie.getPlot());
 
 
-        AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
-        alertDialog.setTitle(title);
-        alertDialog.setMessage(details);
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-        alertDialog.show();
-    }
+        //startActivity(new Intent(this, DestinationActivity.class).putExtras(b));
 
-    private void showFullMovie() {
-        AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
-        alertDialog.setTitle(" UNDER CONSTRUCTION!");
-        alertDialog.setMessage("This feature is NOT available YET. Developer still applying for copy right from copy rigt holders. Sorry!");
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-        alertDialog.show();
-    }
 
-    private void promptUserToSignIn() {
-        AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
-        alertDialog.setTitle("Premium Feature!");
-        alertDialog.setMessage("This feature is only available for authenticated users. Touch OK to sign in or Cancel");
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(getActivity(), MainActivity.class);
-                        getActivity().startActivity(intent);
+        intent.putExtra("movie", mMovie);
 
-                    }
-                });
 
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+//        startActivity(intent);
+        // Get the transition name from the string
+        String transitionName = getString(R.string.transition_string);
+//
+        // Define the view that the animation will start from
+        View viewStart = mRootView.findViewById(R.id.photo_container);
 
-        alertDialog.show();
+        ActivityOptionsCompat options =
+
+                ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
+                        viewStart,
+                        transitionName
+                );
+
+        ActivityCompat.startActivity(getActivity(), intent, options.toBundle());
 
     }
 

@@ -2,8 +2,10 @@ package net.kiwigeeks.moviesondemand.tasks;
 
 import android.content.ContentProviderOperation;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 
 import com.android.volley.RequestQueue;
 
@@ -26,6 +28,7 @@ public class SearchMoviesTask extends AsyncTask<String, Void, Void> {
     private RequestQueue requestQueue;
     private MoviesFoundListener myComponent;
     private Context mContext;
+    private JSONArray mResponse;
 
 
     public SearchMoviesTask(MoviesFoundListener myComponent, Context context) {
@@ -40,6 +43,7 @@ public class SearchMoviesTask extends AsyncTask<String, Void, Void> {
     protected Void doInBackground(String... params) {
 
         String title = params[0];
+        String limit = params[1];
 
         ArrayList<ContentProviderOperation> cpo = new ArrayList<ContentProviderOperation>();
 
@@ -50,17 +54,17 @@ public class SearchMoviesTask extends AsyncTask<String, Void, Void> {
         cpo.add(ContentProviderOperation.newDelete(uri).build());
 
 
-        JSONArray response = null;
+        mResponse = null;
 
         try {
-            response = Requestor.requestMoviesJSON(requestQueue, EndPoints.getRequestUrlFoundMovies(title));
+            mResponse = Requestor.requestMoviesJSON(requestQueue, EndPoints.getRequestUrlFoundMovies(title, limit));
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
 
-        new JSonParser(mContext).parseAndSaveData(cpo, uri, response);
+        new JSonParser(mContext).parseAndSaveData(cpo, uri, mResponse);
 
 
         return null;
@@ -70,8 +74,19 @@ public class SearchMoviesTask extends AsyncTask<String, Void, Void> {
     protected void onPostExecute(Void aVoid) {
         // super.onPostExecute(aVoid);
 
-        if (myComponent != null) {
+        if (myComponent != null && mResponse != null) {
             myComponent.onMoviesFound();
+        } else {
+            AlertDialog alertDialog = new AlertDialog.Builder(mContext).create();
+            alertDialog.setTitle(" No Movies");
+            alertDialog.setMessage("Please check your internet connection and/or try another search!");
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            alertDialog.show();
         }
     }
 
