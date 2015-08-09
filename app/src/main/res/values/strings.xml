@@ -100,4 +100,5 @@ When a user selects a movie, he is given options to watch the trailer (if signed
     <string name="progess_bar_text">Progress bar</string>
     <string name="title_movie_detail">Move Detail</string>
     <string name="view_home">Home</string>
+    <string name="transition2">transition2</string>
 </resources>

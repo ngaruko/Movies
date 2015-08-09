@@ -13,6 +13,7 @@ import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.TransitionInflater;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,7 +47,9 @@ public class MoviePosterActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-
+        if (Build.VERSION.SDK_INT >= 21) {
+            getWindow().setSharedElementExitTransition(TransitionInflater.from(this).inflateTransition(R.transition.shared_element_transition_a));
+        }
         super.onCreate(savedInstanceState);
 
 

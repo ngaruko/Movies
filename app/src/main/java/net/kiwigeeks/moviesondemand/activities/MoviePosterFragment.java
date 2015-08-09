@@ -8,10 +8,12 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.ShareCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.graphics.Palette;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -193,7 +195,9 @@ public class MoviePosterFragment extends Fragment implements LoaderManager.Loade
         mPhotoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showMovieDetails();
+
+
+                showMovieDetails(v);
             }
         });
 
@@ -380,17 +384,15 @@ public class MoviePosterFragment extends Fragment implements LoaderManager.Loade
 
 
             case R.id.full_movie_detail:
-                showMovieDetails();
+                showMovieDetails(v);
                 break;
 
         }
     }
 
 
-    private void showMovieDetails() {
-        Intent intent = new Intent(getActivity(), DetailActivity.class);
-        Log.e("Title", mTitle);
-        Log.e("Plot", mPlot);
+    private void showMovieDetails(View v) {
+
         mMovie = new Movie();
         mMovie.setPlot(mPlot);
         mMovie.setTitle(mTitle);
@@ -405,32 +407,42 @@ public class MoviePosterFragment extends Fragment implements LoaderManager.Loade
         mMovie.setRated(mRated);
 
 
-        Log.e("genre", mGenres);
-//        Log.e("trailer", mVideoUrl);
-        Log.e("Plot", mMovie.getPlot());
-
-
-        //startActivity(new Intent(this, DestinationActivity.class).putExtras(b));
-
+        Intent intent = new Intent(getActivity(), DetailActivity.class);
 
         intent.putExtra("movie", mMovie);
 
+        if (Build.VERSION.SDK_INT >= 21) {
+
+            View viewStart = mRootView.findViewById(R.id.movieThumbnail);
+            View start2 = mRootView.findViewById(R.id.detail_layout);
+
+
+            // v.setTransitionName("transition");
+            //   ActivityOptionsCompat options =  ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), viewStart, viewStart.getTransitionName());
+            ActivityOptionsCompat options =
+                    ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
+                            Pair.create(viewStart, "transition"),
+                            Pair.create(start2, "transition2"));
+
+
+            ActivityCompat.startActivity(getActivity(), intent, options.toBundle());
+        } else startActivity(intent);
 
 //        startActivity(intent);
         // Get the transition name from the string
-        String transitionName = getString(R.string.transition_string);
+//        String transitionName = getString(R.string.transition_string);
+////
+//        // Define the view that the animation will start from
+//        View viewStart = mRootView.findViewById(R.id.photo_container);
 //
-        // Define the view that the animation will start from
-        View viewStart = mRootView.findViewById(R.id.photo_container);
+//        ActivityOptionsCompat options =
+//
+//                ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
+//                        viewStart,
+//                        transitionName
+//                );
 
-        ActivityOptionsCompat options =
-
-                ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
-                        viewStart,
-                        transitionName
-                );
-
-        ActivityCompat.startActivity(getActivity(), intent, options.toBundle());
+        //   ActivityCompat.startActivity(getActivity(), intent, options.toBundle());
 
     }
 
