@@ -3,8 +3,6 @@ package net.kiwigeeks.moviesondemand.activities;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.transition.Slide;
-import android.transition.TransitionInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,15 +22,6 @@ public class MovieSearchActivity extends AppCompatActivity implements MovieLoade
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-        if (Build.VERSION.SDK_INT >= 21) {
-            Slide slide = new Slide();
-            slide.setDuration(5000);
-            getWindow().setEnterTransition(slide);
-            getWindow().setReturnTransition(TransitionInflater.from(this).inflateTransition(R.transition.content_transition_a));
-            getWindow().setSharedElementExitTransition(TransitionInflater.from(this).inflateTransition(R.transition.shared_element_transition_a));
-
-        }
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

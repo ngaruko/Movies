@@ -30,6 +30,7 @@ import net.kiwigeeks.moviesondemand.fragments.BottomMoviesFragment;
 import net.kiwigeeks.moviesondemand.fragments.ComingSoonFragment;
 import net.kiwigeeks.moviesondemand.fragments.InTheatersFragment;
 import net.kiwigeeks.moviesondemand.fragments.TopMoviesFragment;
+import net.kiwigeeks.moviesondemand.services.MoviesService;
 import net.kiwigeeks.moviesondemand.tabs.SlidingTabLayout;
 import net.kiwigeeks.moviesondemand.utilities.LogHelper;
 import net.kiwigeeks.moviesondemand.utilities.SortListener;
@@ -72,6 +73,10 @@ public class MainActivity extends AppCompatActivity {
             getWindow().setSharedElementExitTransition(TransitionInflater.from(this).inflateTransition(R.transition.shared_element_transition_a));
 
         }
+
+// Call the service to get all movies
+        startService(new Intent(this, MoviesService.class));
+
 
 
         setContentView(R.layout.activity_main);
@@ -216,7 +221,6 @@ public class MainActivity extends AppCompatActivity {
         //todo a asunc tast to get movies
 
 
-//validation here; ask user to enter the artist name
 
 
         if (searchQuery != null) {
@@ -240,6 +244,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+
+        if (id == R.id.refresh) this.startService(new Intent(this, MoviesService.class));
 
         //call instantiate item since getItem may return null depending on whether the PagerAdapter is of type FragmentPagerAdapter or FragmentStatePagerAdapter
         Fragment fragment = (Fragment) mAdapter.instantiateItem(mPager, mPager.getCurrentItem());

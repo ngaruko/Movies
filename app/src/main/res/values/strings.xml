@@ -96,4 +96,6 @@ When a user selects a movie, he is given options to watch the trailer (if signed
 
     <string name="transition_string">transition</string>
     <string name="full_details">More Details</string>
+    <string name="loading_new_movies">Loading new movies</string>
+    <string name="progess_bar_text">Progress bar</string>
 </resources>

@@ -63,7 +63,7 @@ public class ComingSoonFragment extends Fragment implements   LoaderManager.Load
 
         if (savedInstanceState == null) {
 
-            getActivity().startService(new Intent(getActivity(), MoviesService.class));
+            //getActivity().startService(new Intent(getActivity(), MoviesService.class));
 
         }
     }
@@ -81,7 +81,7 @@ public class ComingSoonFragment extends Fragment implements   LoaderManager.Load
 
         if (savedInstanceState == null) {
 
-            getActivity().startService(new Intent(getActivity(), MoviesService.class));
+            //  getActivity().startService(new Intent(getActivity(), MoviesService.class));
 
         }
 

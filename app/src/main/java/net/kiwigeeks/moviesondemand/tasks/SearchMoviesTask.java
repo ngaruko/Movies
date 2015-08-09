@@ -2,10 +2,8 @@ package net.kiwigeeks.moviesondemand.tasks;
 
 import android.content.ContentProviderOperation;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v7.app.AlertDialog;
 
 import com.android.volley.RequestQueue;
 
@@ -73,21 +71,25 @@ public class SearchMoviesTask extends AsyncTask<String, Void, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         // super.onPostExecute(aVoid);
+//        if ( mResponse == null)  {
+//            AlertDialog alertDialog = new AlertDialog.Builder(mContext).create();
+//            alertDialog.setTitle(" No Movies");
+//            alertDialog.setMessage("Please check your internet connection and/or try another search!");
+//            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+//                    new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            dialog.dismiss();
+//                        }
+//                    });
+//            alertDialog.show();
+//        }
+//        else
+        if (myComponent != null) {
 
-        if (myComponent != null && mResponse != null) {
-            myComponent.onMoviesFound();
-        } else {
-            AlertDialog alertDialog = new AlertDialog.Builder(mContext).create();
-            alertDialog.setTitle(" No Movies");
-            alertDialog.setMessage("Please check your internet connection and/or try another search!");
-            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-            alertDialog.show();
+            myComponent.onMoviesFound(mResponse);
         }
+
+
     }
 
 }

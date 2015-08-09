@@ -43,7 +43,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
     }
 
-    private void updateDatabase(Context context) {
+    public void updateDatabase(Context context) {
 
 
         Intent service_start = new Intent(context, MoviesService.class);

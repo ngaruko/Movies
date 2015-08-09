@@ -42,16 +42,6 @@ public class MoviePosterActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-//for transition
-//        if (Build.VERSION.SDK_INT >= 21) {
-//            Slide slide = new Slide();
-//            slide.setDuration(5000);
-//            getWindow().setEnterTransition(slide);
-//
-//            getWindow().requestFeature(android.view.Window.FEATURE_CONTENT_TRANSITIONS);
-//            getWindow().requestFeature(android.view.Window.FEATURE_ACTIVITY_TRANSITIONS);
-//            getWindow().requestFeature(android.view.Window.FEATURE_ACTION_BAR_OVERLAY);
-//        }
 
         super.onCreate(savedInstanceState);
 
@@ -66,7 +56,7 @@ public class MoviePosterActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mUpButtonContainer = findViewById(R.id.up_container);
 
@@ -85,9 +75,7 @@ public class MoviePosterActivity extends AppCompatActivity
             @Override
             public void onPageScrollStateChanged(int state) {
                 super.onPageScrollStateChanged(state);
-                mUpButtonContainer.animate()
-                        .alpha((state == ViewPager.SCROLL_STATE_IDLE) ? 1f : 0f)
-                        .setDuration(300);
+                mUpButtonContainer.animate().alpha((state == ViewPager.SCROLL_STATE_IDLE) ? 1f : 0f).setDuration(300);
             }
 
             @Override
@@ -98,18 +86,11 @@ public class MoviePosterActivity extends AppCompatActivity
                 if (mCursor != null) {
                     mSelectedItemId = mCursor.getLong(MovieLoader.Query._ID);
                 }
-                updateUpButtonPosition();
+                //updateUpButtonPosition();
             }
         });
 
 
-        mUpButton = findViewById(R.id.action_up);
-        mUpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onSupportNavigateUp();
-            }
-        });
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mUpButtonContainer.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
@@ -119,7 +100,8 @@ public class MoviePosterActivity extends AppCompatActivity
                     view.onApplyWindowInsets(windowInsets);
                     mTopInset = windowInsets.getSystemWindowInsetTop();
                     mUpButtonContainer.setTranslationY(mTopInset);
-                    updateUpButtonPosition();
+
+
                     return windowInsets;
                 }
             });
@@ -181,14 +163,10 @@ public class MoviePosterActivity extends AppCompatActivity
     public void onUpButtonFloorChanged(long itemId, MoviePosterFragment fragment) {
         if (itemId == mSelectedItemId) {
             mSelectedItemUpButtonFloor = fragment.getUpButtonFloor();
-            updateUpButtonPosition();
+
         }
     }
 
-    private void updateUpButtonPosition() {
-        int upButtonNormalBottom = mTopInset + mUpButton.getHeight();
-        mUpButton.setTranslationY(Math.min(mSelectedItemUpButtonFloor - upButtonNormalBottom, 0));
-    }
 
     private class MyPagerAdapter extends FragmentStatePagerAdapter {
         public MyPagerAdapter(FragmentManager fm) {
@@ -201,7 +179,7 @@ public class MoviePosterActivity extends AppCompatActivity
             MoviePosterFragment fragment = (MoviePosterFragment) object;
             if (fragment != null) {
                 mSelectedItemUpButtonFloor = fragment.getUpButtonFloor();
-                updateUpButtonPosition();
+                //updateUpButtonPosition();
             }
         }
 

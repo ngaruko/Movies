@@ -53,6 +53,7 @@ public class MoviesService extends IntentService {
 
             startActivity(new Intent(this, DialogClass.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
 
+
             return;
         }
 
@@ -84,7 +85,7 @@ public class MoviesService extends IntentService {
         JSONArray topMoviesResponse = null;
         JSONArray bottomMoviesResponse = null;
         try {
-            theatersResponse = Requestor.requestMoviesJSON(requestQueue, EndPoints.getRequestUrlInTheatersMovies(30));
+            theatersResponse = Requestor.requestMoviesJSON(requestQueue, EndPoints.getRequestUrlInTheatersMovies());
             comingSoonResponse = Requestor.requestMoviesJSON(requestQueue, EndPoints.getRequestUrlComingSoon());
             topMoviesResponse = Requestor.requestMoviesJSON(requestQueue, EndPoints.getRequestUrlTopMovies());
             bottomMoviesResponse = Requestor.requestMoviesJSON(requestQueue, EndPoints.getRequestUrlBottomMovies());

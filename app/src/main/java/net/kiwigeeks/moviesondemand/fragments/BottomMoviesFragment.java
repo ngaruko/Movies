@@ -62,7 +62,7 @@ public class BottomMoviesFragment extends Fragment implements LoaderManager.Load
         getActivity().getLoaderManager().initLoader(4, null, this);
         if (savedInstanceState == null) {
 
-            getActivity().startService(new Intent(getActivity(), MoviesService.class));
+            //getActivity().startService(new Intent(getActivity(), MoviesService.class));
 
         }
 

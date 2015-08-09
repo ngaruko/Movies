@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 
 import net.kiwigeeks.moviesondemand.R;
 import net.kiwigeeks.moviesondemand.adapters.AdapterTopMovies;
-import net.kiwigeeks.moviesondemand.data.TopMovieLoader;
+import net.kiwigeeks.moviesondemand.data.MovieLoader;
 import net.kiwigeeks.moviesondemand.services.MoviesService;
 import net.kiwigeeks.moviesondemand.utilities.MovieSorter;
 import net.kiwigeeks.moviesondemand.utilities.SortListener;
@@ -62,7 +62,7 @@ public class TopMoviesFragment extends Fragment implements LoaderManager.LoaderC
 
         if (savedInstanceState == null) {
 
-            getActivity().startService(new Intent(getActivity(), MoviesService.class));
+            //  getActivity().startService(new Intent(getActivity(), MoviesService.class));
 
         }
 
@@ -84,7 +84,7 @@ public class TopMoviesFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public android.content.Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return TopMovieLoader.newAllTopMoviesInstance(getActivity());
+        return MovieLoader.newAllTopMoviesInstance(getActivity());
         //  return null;
     }
 

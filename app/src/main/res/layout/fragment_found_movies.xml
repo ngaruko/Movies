@@ -33,14 +33,15 @@
         android:id="@+id/progressbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:orientation="horizontal">
+        android:layout_gravity="center_vertical"
+        android:background="@color/primaryColorDark"
+        android:orientation="horizontal"
+        android:visibility="invisible">
 
         <ProgressBar
             style="@android:style/Widget.ProgressBar.Small"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="5dp" />
+            android:layout_height="wrap_content" />
 
         <TextView
             android:layout_width="wrap_content"

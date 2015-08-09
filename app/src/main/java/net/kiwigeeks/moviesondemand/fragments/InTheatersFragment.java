@@ -21,12 +21,11 @@ import net.kiwigeeks.moviesondemand.utilities.MovieSorter;
 import net.kiwigeeks.moviesondemand.utilities.SortListener;
 
 
-public class InTheatersFragment extends Fragment implements   LoaderManager.LoaderCallbacks<Cursor>,SortListener {
+public class InTheatersFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, SortListener {
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
 
 
     private static final String TAG_SORT_TITLE = "sortTitle";
@@ -34,12 +33,12 @@ public class InTheatersFragment extends Fragment implements   LoaderManager.Load
     private static final String TAG_SORT_DATE = "sortDate";
     //tag associated with the  menu button that sorts by ratings
 
-    private static final String TAG_SORT_RATING ="sortRating";
+    private static final String TAG_SORT_RATING = "sortRating";
     private static final String CONNECTIVITY_SERVICE = "connectivity";
 
     private RecyclerView mRecyclerView;
     private View mView;
-
+    private View mProgressbar;
 
     public InTheatersFragment() {
         // Required empty public constructor
@@ -54,10 +53,6 @@ public class InTheatersFragment extends Fragment implements   LoaderManager.Load
         return fragment;
     }
 
-    public static String getRequest() {
-        return " ";
-
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,7 +63,7 @@ public class InTheatersFragment extends Fragment implements   LoaderManager.Load
 
 
         if (savedInstanceState == null) {
-            refresh();
+            //refresh();
 
         }
 
@@ -89,10 +84,6 @@ public class InTheatersFragment extends Fragment implements   LoaderManager.Load
         return mView;
     }
 
-    private void refresh() {
-        getActivity().startService(new Intent(getActivity(), MoviesService.class));
-        getActivity().getLoaderManager().restartLoader(0, null, this);
-    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -116,10 +107,12 @@ public class InTheatersFragment extends Fragment implements   LoaderManager.Load
 
 
         if (isAdded()) {
+
             AdapterMoviesInTheaters adapter = new AdapterMoviesInTheaters(cursor, getActivity());
             adapter.setHasStableIds(true);
             try {
                 mRecyclerView.setAdapter(adapter);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -177,6 +170,11 @@ public class InTheatersFragment extends Fragment implements   LoaderManager.Load
     @Override
     public void onRefresh() {
         refresh();
+    }
+
+    private void refresh() {
+        getActivity().startService(new Intent(getActivity(), MoviesService.class));
+        getActivity().getLoaderManager().restartLoader(1, null, this);
     }
 }
 

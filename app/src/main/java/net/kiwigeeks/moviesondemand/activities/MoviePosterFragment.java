@@ -93,15 +93,6 @@ public class MoviePosterFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-//
-//
-//        //for transition
-//
-//        if (Build.VERSION.SDK_INT >= 21) {
-//            getActivity().getWindow().requestFeature(android.view.Window.FEATURE_CONTENT_TRANSITIONS);
-//            getActivity().getWindow().requestFeature(android.view.Window.FEATURE_ACTIVITY_TRANSITIONS);
-//            getActivity().getWindow().requestFeature(android.view.Window.FEATURE_ACTION_BAR_OVERLAY);
-//        }
 
 
         super.onCreate(savedInstanceState);
@@ -193,9 +184,7 @@ public class MoviePosterFragment extends Fragment implements LoaderManager.Loade
         });
 
 
-        // mRootView.findViewById(R.id.view_trailer_button).setOnClickListener(this);
         mRootView.findViewById(R.id.full_movie_detail).setOnClickListener(this);
-        // mRootView.findViewById(R.id.full_synopsis_button).setOnClickListener(this);
 
 
         bindViews();

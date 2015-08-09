@@ -103,6 +103,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
 
         mPhotoView = (ImageView) findViewById(R.id.movieThumbnail);
+
+        mPhotoView.setOnClickListener(this);
+
+
         mPhotoContainerView = findViewById(R.id.photo_container);
         mDetailLayout = findViewById(R.id.detail_layout);
 
@@ -187,10 +191,28 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
         switch (v.getId()) {
             case R.id.view_trailer_button:
+            case R.id.movieThumbnail:
+
+                if (!HomeFragment.signedIn) {
+                    try {
+                        promptUserToSignIn();
+                        return;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+
+                        Toast.makeText(getBaseContext(), "This feature is only available for authenticated users.Please sign in first!",
+                                Toast.LENGTH_LONG).show();
+                    }
+
+                }
+
 
                 ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
                 NetworkInfo ni = cm.getActiveNetworkInfo();
+
                 if (ni != null && ni.isConnected()) {
+                    Toast.makeText(getBaseContext(), "Loading your trailer...",
+                            Toast.LENGTH_LONG).show();
                     new FetchMovieTask(new MovieLoadedListener() {
                         @Override
                         public void onMovieLoded(Movie movie) {
@@ -201,8 +223,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
                             Log.e("Clikced", "Trailer coming");
                             Log.e("URL", mVideoUrl);
-                            if (HomeFragment.signedIn) {
-                                if (mVideoUrl != null && !mVideoUrl.isEmpty()) {
+
+
+                            if (mVideoUrl != null && !mVideoUrl.isEmpty()) {
 
 
                                     startActivity(new Intent(Intent.ACTION_VIEW,
@@ -212,8 +235,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                                     Toast.makeText(getBaseContext(), "No trailers available for this movie!",
                                             Toast.LENGTH_LONG).show();
                                 }
-
-                            } else promptUserToSignIn();
 
 
                         }
@@ -261,7 +282,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     }
                 });
 
+
         alertDialog.show();
+
 
     }
 }

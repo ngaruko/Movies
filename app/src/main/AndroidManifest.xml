@@ -96,10 +96,14 @@
         </activity>
         <activity
             android:name=".utilities.DialogClass"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            android:theme="@android:style/Theme.Translucent" />
         <activity
             android:name=".activities.DetailActivity"
-            android:label="@string/title_activity_detail"></activity>
+            android:label="@string/title_activity_detail">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="net.kiwigeeks.moviesondemand.activities.MoviePosterActivity" />
+        </activity>
     </application>
 
 </manifest>

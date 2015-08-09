@@ -1,6 +1,5 @@
 package net.kiwigeeks.moviesondemand.adapters;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -70,7 +69,7 @@ public class AdapterTopMovies extends RecyclerView.Adapter<AdapterTopMovies.View
 
         final ViewHolderMovies vh = new ViewHolderMovies(view);
 
-        final Activity selfContext = (Activity) context;
+
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
