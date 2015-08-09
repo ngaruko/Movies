@@ -16,7 +16,7 @@ public class TopMovieLoader extends CursorLoader {
     }
 
     public static TopMovieLoader newInstanceForItemId(Context context, long itemId) {
-        return new TopMovieLoader(context, MoviesContract.InTheater.buildItemUri(itemId));
+        return new TopMovieLoader(context, MoviesContract.TopMovies.buildItemUri(itemId));
     }
 
    

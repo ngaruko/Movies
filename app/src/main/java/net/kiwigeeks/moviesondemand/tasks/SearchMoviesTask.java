@@ -57,12 +57,13 @@ public class SearchMoviesTask extends AsyncTask<String, Void, Void> {
         try {
             mResponse = Requestor.requestMoviesJSON(requestQueue, EndPoints.getRequestUrlFoundMovies(title, limit));
 
+            if (mResponse != null && mResponse.length() > 0)
+                new JSonParser(mContext).parseAndSaveData(cpo, uri, mResponse);
+
         } catch (Exception e) {
+
             e.printStackTrace();
         }
-
-
-        new JSonParser(mContext).parseAndSaveData(cpo, uri, mResponse);
 
 
         return null;
@@ -70,20 +71,7 @@ public class SearchMoviesTask extends AsyncTask<String, Void, Void> {
 
     @Override
     protected void onPostExecute(Void aVoid) {
-        // super.onPostExecute(aVoid);
-//        if ( mResponse == null)  {
-//            AlertDialog alertDialog = new AlertDialog.Builder(mContext).create();
-//            alertDialog.setTitle(" No Movies");
-//            alertDialog.setMessage("Please check your internet connection and/or try another search!");
-//            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-//                    new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            dialog.dismiss();
-//                        }
-//                    });
-//            alertDialog.show();
-//        }
-//        else
+
         if (myComponent != null) {
 
             myComponent.onMoviesFound(mResponse);

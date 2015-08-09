@@ -14,6 +14,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
@@ -21,6 +22,7 @@ import android.view.WindowInsets;
 import net.kiwigeeks.moviesondemand.R;
 import net.kiwigeeks.moviesondemand.data.MovieLoader;
 import net.kiwigeeks.moviesondemand.data.MoviesContract;
+import net.kiwigeeks.moviesondemand.data.TopMovieLoader;
 
 
 public class MoviePosterActivity extends AppCompatActivity
@@ -38,6 +40,8 @@ public class MoviePosterActivity extends AppCompatActivity
     private View mUpButtonContainer;
     private View mUpButton;
     private View mProgressbar;
+    private String fragmentIdentifier;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,9 +62,36 @@ public class MoviePosterActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mUpButtonContainer = findViewById(R.id.up_container);
 
-        getLoaderManager().initLoader(0, null, this);
+        mUpButtonContainer = findViewById(R.id.up_container);
+        if (getIntent().hasExtra("fragment")) {
+            fragmentIdentifier = getIntent().getStringExtra("fragment");
+        }// else fragmentIdentifier="top";
+
+
+        if (savedInstanceState != null)
+            fragmentIdentifier = savedInstanceState.getString("fragment");
+
+        switch (fragmentIdentifier) {
+            case "theaters":
+                getLoaderManager().initLoader(0, null, this);
+                break;
+
+            case "top":
+                getLoaderManager().initLoader(1, null, this);
+                break;
+            case "coming":
+                getLoaderManager().initLoader(2, null, this);
+                break;
+            case "bottom":
+                getLoaderManager().initLoader(3, null, this);
+                break;
+            case "found":
+                getLoaderManager().initLoader(6, null, this);
+                break;
+
+
+        }
 
         mProgressbar = findViewById(R.id.progressbar);
 
@@ -122,11 +153,36 @@ public class MoviePosterActivity extends AppCompatActivity
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putLong("id", mSelectedItemId);
+        outState.putString("fragment", fragmentIdentifier);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return MovieLoader.newAllInTheatersMoviesInstance(this);
+
+        switch (fragmentIdentifier) {
+            case "theaters":
+                return MovieLoader.newAllInTheatersMoviesInstance(this);
+
+
+            case "top":
+                return TopMovieLoader.newAllTopMoviesInstance(this);
+
+
+            case "bottom":
+                return MovieLoader.newAllBottomMoviesInstance(this);
+
+
+            case "coming":
+                return MovieLoader.newAllComingSoonMoviesInstance(this);
+
+            case "found":
+                return MovieLoader.newAllFoundMoviesInstance(this);
+
+
+        }
+
+
+        return null;
     }
 
     @Override
@@ -167,6 +223,16 @@ public class MoviePosterActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
     private class MyPagerAdapter extends FragmentStatePagerAdapter {
         public MyPagerAdapter(FragmentManager fm) {

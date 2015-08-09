@@ -24,9 +24,7 @@ import net.kiwigeeks.moviesondemand.data.MoviesContract;
 import net.kiwigeeks.moviesondemand.data.TopMovieLoader;
 import net.kiwigeeks.moviesondemand.utilities.Constants;
 
-/**
- * Created by itl on 1/08/2015.
- */
+
 public class AdapterTopMovies extends RecyclerView.Adapter<AdapterTopMovies.ViewHolderMovies> {
     private Cursor mCursor;
     private LayoutInflater mLayoutInflater;
@@ -75,14 +73,14 @@ public class AdapterTopMovies extends RecyclerView.Adapter<AdapterTopMovies.View
             public void onClick(View view) {
 
 
-
-
                     try {
 
 
                         Intent i = new Intent(context, MoviePosterActivity.class);
-                        Uri uri = MoviesContract.InTheater.buildItemUri(getItemId(vh.getAdapterPosition()));
+                        Uri uri = MoviesContract.TopMovies.buildItemUri(getItemId(vh.getAdapterPosition()));
                         i.setData(uri);
+                        i.putExtra("fragment", "top");
+
                         context.startActivity(i);
 
 
@@ -92,6 +90,7 @@ public class AdapterTopMovies extends RecyclerView.Adapter<AdapterTopMovies.View
                     }
 
                 Log.e("position", String.valueOf(getItemId(vh.getAdapterPosition())));
+
             }
         });
         return vh;

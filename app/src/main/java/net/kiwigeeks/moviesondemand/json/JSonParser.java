@@ -130,7 +130,7 @@ public class JSonParser {
                             }
                             if (currentMovie.has(KEY_GENRES) && !currentMovie.isNull(KEY_GENRES)) {
 
-                                //TODO serialise this
+
                                 JSONArray genresArray = currentMovie.getJSONArray(KEY_GENRES);
                                 if (genresArray.length() == 0) return;
                                 if (genresArray.length() == 1)
@@ -261,12 +261,24 @@ public class JSonParser {
                             }
                             if (currentMovie.has(KEY_GENRES) && !currentMovie.isNull(KEY_GENRES)) {
 
-                                //TODO serialise this
-                                JSONArray genresArray = currentMovie.getJSONArray(KEY_GENRES);
-                                for (int g = 0; g < genresArray.length(); g++) {
-                                    String genre = genresArray.get(g).toString();
-                                    genres = genres.concat(", " + genre).substring(1);
 
+                                JSONArray genresArray = currentMovie.getJSONArray(KEY_GENRES);
+                                if (genresArray.length() == 0) return;
+                                if (genresArray.length() == 1)
+                                    genres = genresArray.get(0).toString();
+
+
+                                else {
+                                    String addGenres = null;
+
+
+                                    for (int g = 1; g < genresArray.length(); g++) {
+                                        addGenres = ", " + genresArray.get(g).toString();
+
+                                    }
+
+
+                                    genres = genresArray.get(0) + addGenres;
                                 }
 
 

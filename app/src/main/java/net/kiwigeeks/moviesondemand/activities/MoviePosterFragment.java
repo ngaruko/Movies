@@ -28,6 +28,7 @@ import com.android.volley.toolbox.ImageLoader;
 import net.kiwigeeks.moviesondemand.R;
 import net.kiwigeeks.moviesondemand.data.Movie;
 import net.kiwigeeks.moviesondemand.data.MovieLoader;
+import net.kiwigeeks.moviesondemand.data.TopMovieLoader;
 import net.kiwigeeks.moviesondemand.utilities.DrawInsetsFrameLayout;
 import net.kiwigeeks.moviesondemand.utilities.ImageLoaderHelper;
 import net.kiwigeeks.moviesondemand.utilities.ObservableScrollView;
@@ -64,6 +65,7 @@ public class MoviePosterFragment extends Fragment implements LoaderManager.Loade
     public View mDetailLayout;
     public String mpPhotoUrl;
     public String mRating;
+    private String fragmentIdentifier;
 
 
     public MoviePosterFragment() {
@@ -120,7 +122,32 @@ public class MoviePosterFragment extends Fragment implements LoaderManager.Loade
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        getLoaderManager().initLoader(0, null, this);
+        fragmentIdentifier = getActivity().getIntent().getStringExtra("fragment");
+
+        switch (fragmentIdentifier) {
+            case "theaters":
+                getLoaderManager().initLoader(0, null, this);
+                break;
+
+            case "top":
+                getLoaderManager().initLoader(1, null, this);
+                break;
+            case "coming":
+                getLoaderManager().initLoader(2, null, this);
+                break;
+            case "bottom":
+                getLoaderManager().initLoader(3, null, this);
+                break;
+            case "found":
+                getLoaderManager().initLoader(6, null, this);
+                break;
+
+//                default:getLoaderManager().initLoader(0, null, this);
+//                break;
+
+
+        }
+
     }
 
 
@@ -223,6 +250,8 @@ public class MoviePosterFragment extends Fragment implements LoaderManager.Loade
 
             mTitleId = MovieLoader.Query.COLUMN_TITLE;
             mTitle = mCursor.getString(mTitleId);
+
+            getActivity().setTitle(mTitle);
             mReleaseDate = mCursor.getLong(MovieLoader.Query.COLUMN_RELEASE_DATE);
             mRated = mCursor.getString(MovieLoader.Query.COLUMN_RATED);
             mGenres = mCursor.getString(MovieLoader.Query.COLUMN_GENRES);
@@ -281,7 +310,32 @@ public class MoviePosterFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return MovieLoader.newInstanceForItemId(getActivity(), mItemId);
+        //return MovieLoader.newInstanceForItemIdgetActivity(), mItemId);
+
+        switch (fragmentIdentifier) {
+            case "theaters":
+                return MovieLoader.newInstanceForItemId(getActivity(), mItemId);
+
+
+            case "top":
+                return TopMovieLoader.newInstanceForItemId(getActivity(), mItemId);
+
+
+            case "bottom":
+                return MovieLoader.newBootomMovieForItemId(getActivity(), mItemId);
+
+
+            case "coming":
+                return MovieLoader.newComingSoonForItemId(getActivity(), mItemId);
+
+            case "found":
+                return MovieLoader.newFoundForItemId(getActivity(), mItemId);
+
+
+        }
+
+
+        return null;
     }
 
     @Override

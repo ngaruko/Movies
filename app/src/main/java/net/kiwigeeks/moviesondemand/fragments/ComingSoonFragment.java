@@ -76,7 +76,7 @@ public class ComingSoonFragment extends Fragment implements   LoaderManager.Load
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.coming_soon_movies_recyclerView);
 
-        getActivity().getLoaderManager().initLoader(3, null, this);
+        getActivity().getLoaderManager().initLoader(2, null, this);
 
 
         if (savedInstanceState == null) {
@@ -117,7 +117,7 @@ public class ComingSoonFragment extends Fragment implements   LoaderManager.Load
     public void onSortTitle() {
         MovieSorter.Sort.setSortString(TAG_SORT_TITLE);
 
-        getActivity().getLoaderManager().restartLoader(3, null, this);
+        getActivity().getLoaderManager().restartLoader(2, null, this);
         Snackbar
                 .make(getView(), "Sorted by Title", Snackbar.LENGTH_LONG)
                 .setAction("OK", null)
@@ -129,7 +129,7 @@ public class ComingSoonFragment extends Fragment implements   LoaderManager.Load
     public void onSortByDate() {
         MovieSorter.Sort.setSortString(TAG_SORT_DATE);
 
-        getActivity().getLoaderManager().restartLoader(3, null, this);
+        getActivity().getLoaderManager().restartLoader(2, null, this);
         Snackbar
                 .make(getView(), "Sorted by Date", Snackbar.LENGTH_LONG)
                 .setAction("OK", null)
@@ -141,7 +141,7 @@ public class ComingSoonFragment extends Fragment implements   LoaderManager.Load
     public void onSortByRating() {
 
         MovieSorter.Sort.setSortString(TAG_SORT_RATING);
-        getActivity().getLoaderManager().restartLoader(3, null, this);
+        getActivity().getLoaderManager().restartLoader(2, null, this);
 
 
         Snackbar
@@ -158,6 +158,6 @@ public class ComingSoonFragment extends Fragment implements   LoaderManager.Load
 
     private void refresh() {
         getActivity().startService(new Intent(getActivity(), MoviesService.class));
-        getActivity().getLoaderManager().restartLoader(3, null, this);
+        getActivity().getLoaderManager().restartLoader(2, null, this);
     }
 }

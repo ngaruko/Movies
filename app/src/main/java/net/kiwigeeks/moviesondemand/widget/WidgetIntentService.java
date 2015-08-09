@@ -18,7 +18,8 @@ import com.android.volley.toolbox.ImageLoader;
 
 import net.kiwigeeks.moviesondemand.R;
 import net.kiwigeeks.moviesondemand.VolleySingleton;
-import net.kiwigeeks.moviesondemand.activities.MoviePosterActivity;
+import net.kiwigeeks.moviesondemand.activities.DetailActivity;
+import net.kiwigeeks.moviesondemand.data.Movie;
 import net.kiwigeeks.moviesondemand.data.MoviesContract;
 
 import java.io.IOException;
@@ -41,6 +42,9 @@ public class WidgetIntentService extends IntentService {
     public static final int COL_THUMBNAIL = 4;
     public static final int COL_RELEASE_DATE = 5;
     public static final int COL_RATING = 6;
+    public static final int COL_PLOT = 7;
+    public static final int COL_TRAILER = 8;
+
 
     // A "projection" defines the columns that will be returned for each row
     private static final String[] MOVIES_COLUMNS = {
@@ -51,7 +55,9 @@ public class WidgetIntentService extends IntentService {
             MoviesContract.InTheater.COLUMN_RATED,
             MoviesContract.InTheater.COLUMN_URL_THUMBNAIL,
             MoviesContract.InTheater.COLUMN_RELEASE_DATE,
-            MoviesContract.InTheater.COLUMN_RATING
+            MoviesContract.InTheater.COLUMN_RATING,
+            MoviesContract.InTheater.COLUMN_PLOT,
+            MoviesContract.InTheater.COLUMN_TRAILER_URL
     };
     public long id = 0;
     private VolleySingleton mVolleySingleton;
@@ -61,8 +67,15 @@ public class WidgetIntentService extends IntentService {
     private String thumbnailUrl;
     private ImageView mPhotoView;
     private String title;
-    private String releaseDate;
-    private String genres;
+
+
+    private String mPlot;
+    private String mVideoUrl;
+    private String mGenres;
+    private String mReleaseDate;
+    private String mRuntime;
+    private String mRating;
+    private String mRated;
 
 
     /**
@@ -97,10 +110,14 @@ public class WidgetIntentService extends IntentService {
 
 
             title = data.getString(COL_TITLE);
-            releaseDate = data.getString(COL_RELEASE_DATE);
+            mReleaseDate = data.getString(COL_RELEASE_DATE);
 
             thumbnailUrl = data.getString(COL_THUMBNAIL);
-            genres = data.getString(COL_GENRES);
+            mGenres = data.getString(COL_GENRES);
+            mRated = data.getString(COL_RATED);
+            mPlot = data.getString(COL_PLOT);
+            mVideoUrl = data.getString(COL_TRAILER);
+            mRating = data.getString(COL_RATING);
             id = data.getLong(COL_ID);
 
             data.close();
@@ -123,9 +140,9 @@ public class WidgetIntentService extends IntentService {
         views.setImageViewResource(R.id.widgetThumbnail, R.drawable.movie);
 
         views.setTextViewText(R.id.widgetMovieTitle, title);
-        views.setTextViewText(R.id.widgetMovieReleaseDate, releaseDate);
+        views.setTextViewText(R.id.widgetMovieReleaseDate, mReleaseDate);
 
-        views.setTextViewText(R.id.wigetGenres, genres);
+        views.setTextViewText(R.id.wigetGenres, mGenres);
 
 
         try {
@@ -137,11 +154,40 @@ public class WidgetIntentService extends IntentService {
         }
 
         // Create an Intent to launch MainActivity
-        Intent launchIntent = new Intent(this, MoviePosterActivity.class);
-        Uri uri = MoviesContract.InTheater.buildItemUri(id);
-        launchIntent.setData(uri);
+        Intent launchIntent = new Intent(this, DetailActivity.class);
+
+//        Uri uri = MoviesContract.InTheater.buildItemUri(id);
+//        launchIntent.setData(uri);
+
+
+        Movie mMovie = new Movie();
+        mMovie.setPlot(mPlot);
+        mMovie.setTitle(title);
+
+
+        mMovie.setTrailerUrl(mVideoUrl);
+        mMovie.setGenres(mGenres);
+        mMovie.setReleaseDate(String.valueOf(mReleaseDate));
+        mMovie.setUrlPoster(thumbnailUrl);
+
+        mMovie.setRuntime(mRuntime);
+        mMovie.setRating(mRating);
+        mMovie.setRated(mRated);
+
+
+        Log.e("genre", mGenres);
+//        Log.e("trailer", mVideoUrl);
+        Log.e("Plot", mMovie.getPlot());
+
+
+        //startActivity(new Intent(this, DestinationActivity.class).putExtras(b));
+
+
+        launchIntent.putExtra("movie", mMovie);
+
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, launchIntent, 0);
+
         views.setOnClickPendingIntent(R.id.appWidget, pendingIntent);
 
         // Tell the AppWidgetManager to perform an update on the current app widget

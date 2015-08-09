@@ -3,20 +3,23 @@ package net.kiwigeeks.moviesondemand.fragments;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.LoaderManager;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import net.kiwigeeks.moviesondemand.Callbacks.MoviesFoundListener;
 import net.kiwigeeks.moviesondemand.R;
@@ -63,6 +66,21 @@ public class FoundMoviesFragment extends Fragment implements MoviesFoundListener
         super.onCreate(savedInstanceState);
 
 
+        ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo ni = cm.getActiveNetworkInfo();
+        if (ni == null || !ni.isConnected()) {
+            Log.w("Connection", "Not online, not refreshing.");
+
+
+            Toast.makeText(getActivity(), "Please check your network connections and try again", Toast.LENGTH_LONG).show();
+
+            return;
+        }
+
+
+
+
+
         Intent intent = getActivity().getIntent();
         if (intent != null && intent.hasExtra(TITLE_EXTRA)) {
 
@@ -82,7 +100,6 @@ public class FoundMoviesFragment extends Fragment implements MoviesFoundListener
 
 
         } else new SearchMoviesTask(this, getActivity()).execute(mTitle, "&limit=10");
-//        mProgressbar.setVisibility(View.GONE);
 
 
     }
@@ -113,8 +130,6 @@ public class FoundMoviesFragment extends Fragment implements MoviesFoundListener
         if (savedInstanceState != null) {
             mProgressbar.setVisibility(View.GONE);
 
-            //getActivity().startService(new Intent(getActivity(), MoviesService.class));
-
 
         }
 
@@ -134,7 +149,7 @@ public class FoundMoviesFragment extends Fragment implements MoviesFoundListener
         }
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
+
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -160,30 +175,15 @@ public class FoundMoviesFragment extends Fragment implements MoviesFoundListener
 
         mProgressbar.setVisibility(View.GONE);
 
-        mHasResults = true;
 
-        if (response == null) {
-            AlertDialog alertDialog = new AlertDialog.Builder(getActivity().getApplicationContext()).create();
-            alertDialog.setTitle(" No Movies");
-            alertDialog.setMessage("Please check your internet connection and/or try another search!");
-            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-            try {
-                alertDialog.show();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        if (response == null || response.length() == 0) {
 
-//            Toast.makeText(getActivity().getBaseContext(), "Please check your internet connection and/or try another search!",
-//                    Toast.LENGTH_SHORT).show();
+
+            Toast.makeText(getActivity(), "No movie found....Please  try another search!", Toast.LENGTH_LONG).show();
+
 
         } else {
-            mHasResults = false;
-            mProgressbar.setVisibility(View.GONE);
+            mHasResults = true;
 
             getActivity().getLoaderManager().initLoader(6, null, this);
         }
@@ -203,8 +203,6 @@ public class FoundMoviesFragment extends Fragment implements MoviesFoundListener
 
         if (isAdded()) {
 
-
-            //mProgressbar.setVisibility(View.GONE);
 
             AdapterFoundMovies adapter = new AdapterFoundMovies(cursor, getActivity());
             adapter.setHasStableIds(true);

@@ -77,9 +77,9 @@ public class AdapterFoundMovies extends RecyclerView.Adapter<AdapterFoundMovies.
                     Intent i = new Intent(context, MoviePosterActivity.class);
 
 
-                    Uri uri = MoviesContract.TopMovies.buildItemUri(getItemId(vh.getAdapterPosition()));
+                    Uri uri = MoviesContract.FoundMovies.buildItemUri(getItemId(vh.getAdapterPosition()));
                     i.setData(uri);
-
+                    i.putExtra("fragment", "found");
 
                     context.startActivity(i);
 

@@ -80,6 +80,8 @@ public class AdapterMoviesInTheaters extends RecyclerView.Adapter<AdapterMoviesI
                         Intent i = new Intent(context, MoviePosterActivity.class);
                         Uri uri = MoviesContract.InTheater.buildItemUri(getItemId(vh.getAdapterPosition()));
                         i.setData(uri);
+
+                        i.putExtra("fragment", "theaters");
                         context.startActivity(i);
 
 

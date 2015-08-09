@@ -59,7 +59,7 @@ public class BottomMoviesFragment extends Fragment implements LoaderManager.Load
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        getActivity().getLoaderManager().initLoader(4, null, this);
+        getActivity().getLoaderManager().initLoader(3, null, this);
         if (savedInstanceState == null) {
 
             //getActivity().startService(new Intent(getActivity(), MoviesService.class));
@@ -107,7 +107,7 @@ public class BottomMoviesFragment extends Fragment implements LoaderManager.Load
     public void onSortTitle() {
         MovieSorter.Sort.setSortString(TAG_SORT_TITLE);
 
-        getActivity().getLoaderManager().restartLoader(4, null, this);
+        getActivity().getLoaderManager().restartLoader(3, null, this);
         Snackbar
                 .make(getView(), "Sorted by Title", Snackbar.LENGTH_LONG)
                 .setAction("OK", null)
@@ -119,7 +119,7 @@ public class BottomMoviesFragment extends Fragment implements LoaderManager.Load
     public void onSortByDate() {
         MovieSorter.Sort.setSortString(TAG_SORT_DATE);
 
-        getActivity().getLoaderManager().restartLoader(4, null, this);
+        getActivity().getLoaderManager().restartLoader(3, null, this);
         Snackbar
                 .make(getView(), "Sorted by Date", Snackbar.LENGTH_LONG)
                 .setAction("OK", null)
@@ -131,7 +131,7 @@ public class BottomMoviesFragment extends Fragment implements LoaderManager.Load
     public void onSortByRating() {
 
         MovieSorter.Sort.setSortString(TAG_SORT_RATING);
-        getActivity().getLoaderManager().restartLoader(4, null, this);
+        getActivity().getLoaderManager().restartLoader(3, null, this);
 
 
         Snackbar
@@ -148,6 +148,6 @@ public class BottomMoviesFragment extends Fragment implements LoaderManager.Load
 
     private void refresh() {
         getActivity().startService(new Intent(getActivity(), MoviesService.class));
-        getActivity().getLoaderManager().restartLoader(4, null, this);
+        getActivity().getLoaderManager().restartLoader(3, null, this);
     }
 }

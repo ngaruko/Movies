@@ -6,7 +6,7 @@ public class EndPoints {
 
     public static final String BASE_URL = "http://www.myapifilms.com/imdb/";
     public static final String URL_IN_THEATERS = "http://www.myapifilms.com/imdb/inTheaters";//?end=30";
-    public static final String URL_COMING_SOON = "http://www.myapifilms.com/imdb/comingSoon`";
+    public static final String URL_COMING_SOON = "http://www.myapifilms.com/imdb/comingSoon";
 
     public static final String URL_TOP_MOVIES = "http://www.myapifilms.com/imdb/top?data=F&end=30";
     public static final String URL_BOTTOM_MOVIES = "http://www.myapifilms.com/imdb/bottom?data=F&end=30";

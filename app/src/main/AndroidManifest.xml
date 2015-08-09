@@ -99,7 +99,15 @@
             android:theme="@android:style/Theme.Translucent" />
         <activity
             android:name=".activities.DetailActivity"
-            android:label="@string/title_activity_detail">
+            android:label="@string/title_movie_detail">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="vnd.android.cursor.item/vnd.net.kiwigeeks.moviesondemand.in_theaters" />
+            </intent-filter>
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="net.kiwigeeks.moviesondemand.activities.MoviePosterActivity" />

@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
@@ -31,6 +32,7 @@ import net.kiwigeeks.moviesondemand.MainActivity;
 import net.kiwigeeks.moviesondemand.R;
 import net.kiwigeeks.moviesondemand.data.Movie;
 import net.kiwigeeks.moviesondemand.tasks.FetchMovieTask;
+import net.kiwigeeks.moviesondemand.utilities.Constants;
 import net.kiwigeeks.moviesondemand.utilities.DrawInsetsFrameLayout;
 import net.kiwigeeks.moviesondemand.utilities.ImageLoaderHelper;
 import net.kiwigeeks.moviesondemand.utilities.ObservableScrollView;
@@ -89,6 +91,11 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
             setContentView(R.layout.activity_detail);
 
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle(mTitle);
+
         }
 
 
@@ -115,6 +122,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
 
         findViewById(R.id.view_trailer_button).setOnClickListener(this);
+        findViewById(R.id.view_home_button).setOnClickListener(this);
 
 
         TextView titleView = (TextView) findViewById(R.id.movie_title);
@@ -171,25 +179,16 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     public void onClick(View v) {
 
         switch (v.getId()) {
+
+            case R.id.view_home_button:
+                startActivity(new Intent(this, MainActivity.class));
+                break;
             case R.id.view_trailer_button:
             case R.id.movieThumbnail:
 
@@ -217,24 +216,37 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         @Override
                         public void onMovieLoded(Movie movie) {
 
-                            if (movie == null) return;
+                            if (movie == null) {
+                                Toast.makeText(getBaseContext(), "No trailers available for this movie!",
+                                        Toast.LENGTH_LONG).show();
+                                return;
+                            }
+                            if (movie.getTrailerUrl() == null || movie.getTrailerUrl().isEmpty()) {
+                                Toast.makeText(getBaseContext(), "No trailer available for this movie!",
+                                        Toast.LENGTH_LONG).show();
+                                return;
+                            }
+
+
                             mVideoUrl = movie.getTrailerUrl();
+
+
                             Log.e("Trailer", mVideoUrl);
 
                             Log.e("Clikced", "Trailer coming");
                             Log.e("URL", mVideoUrl);
 
 
-                            if (mVideoUrl != null && !mVideoUrl.isEmpty()) {
+                            if (mVideoUrl != null && !mVideoUrl.equals(Constants.NA) && !mVideoUrl.isEmpty()) {
 
 
-                                    startActivity(new Intent(Intent.ACTION_VIEW,
-                                            Uri.parse(mVideoUrl)));
+                                startActivity(new Intent(Intent.ACTION_VIEW,
+                                        Uri.parse(mVideoUrl)));
 
-                                } else {
-                                    Toast.makeText(getBaseContext(), "No trailers available for this movie!",
-                                            Toast.LENGTH_LONG).show();
-                                }
+                            } else {
+                                Toast.makeText(getBaseContext(), "No trailers available for this movie!",
+                                        Toast.LENGTH_LONG).show();
+                            }
 
 
                         }
@@ -286,5 +298,17 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         alertDialog.show();
 
 
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -22,10 +22,15 @@ public class DialogClass extends Activity {
                         finish();
 
 
+
                     }
                 });
 
-        alertDialog.show();
+        try {
+            alertDialog.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

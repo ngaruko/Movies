@@ -16,12 +16,11 @@ public class MovieSearchActivity extends AppCompatActivity implements MovieLoade
 
 
     public Movie mMovie;
-    private View mProgressbar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -32,7 +31,7 @@ public class MovieSearchActivity extends AppCompatActivity implements MovieLoade
 
 
         setContentView(R.layout.activity_movie_search);
-//mProgressbar=findViewById(R.id.progressbar);
+
 
     }
 

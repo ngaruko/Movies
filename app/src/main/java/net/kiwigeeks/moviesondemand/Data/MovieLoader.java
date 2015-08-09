@@ -27,6 +27,22 @@ public class MovieLoader extends CursorLoader {
         return new MovieLoader(context, MoviesContract.InTheater.buildItemUri(itemId));
     }
 
+    public static MovieLoader newBootomMovieForItemId(Context context, long itemId) {
+        return new MovieLoader(context, MoviesContract.BottomMovies.buildItemUri(itemId));
+    }
+
+    public static MovieLoader newComingSoonForItemId(Context context, long itemId) {
+        return new MovieLoader(context, MoviesContract.ComingSoon.buildItemUri(itemId));
+    }
+
+
+    public static MovieLoader newFoundForItemId(Context context, long itemId) {
+        return new MovieLoader(context, MoviesContract.FoundMovies.buildItemUri(itemId));
+    }
+
+    public static MovieLoader newTopMovieForItemId(Context context, long itemId) {
+        return new MovieLoader(context, MoviesContract.TopMovies.buildItemUri(itemId));
+    }
     public static MovieLoader newAllBottomMoviesInstance(Context context) {
         return new MovieLoader(context, MoviesContract.BottomMovies.buildDirUri());
     }

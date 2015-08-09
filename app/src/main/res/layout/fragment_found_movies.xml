@@ -34,18 +34,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:background="@color/primaryColorDark"
+
         android:orientation="horizontal"
         android:visibility="invisible">
+
 
         <ProgressBar
             style="@android:style/Widget.ProgressBar.Small"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:contentDescription="@string/progess_bar_text"
+
+            />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:contentDescription="@string/loading_new_movies"
             android:text="@string/loading_movie" />
     </LinearLayout>
 </FrameLayout>
