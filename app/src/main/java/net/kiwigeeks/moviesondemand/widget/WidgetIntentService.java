@@ -11,7 +11,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.util.Log;
-import android.widget.ImageView;
 import android.widget.RemoteViews;
 
 import com.android.volley.toolbox.ImageLoader;
@@ -44,6 +43,7 @@ public class WidgetIntentService extends IntentService {
     public static final int COL_RATING = 6;
     public static final int COL_PLOT = 7;
     public static final int COL_TRAILER = 8;
+    public static final int COL_RUNTIME = 9;
 
 
     // A "projection" defines the columns that will be returned for each row
@@ -57,15 +57,17 @@ public class WidgetIntentService extends IntentService {
             MoviesContract.InTheater.COLUMN_RELEASE_DATE,
             MoviesContract.InTheater.COLUMN_RATING,
             MoviesContract.InTheater.COLUMN_PLOT,
-            MoviesContract.InTheater.COLUMN_TRAILER_URL
+            MoviesContract.InTheater.COLUMN_TRAILER_URL,
+            MoviesContract.InTheater.COLUMN_RUNTIME
     };
+
     public long id = 0;
     private VolleySingleton mVolleySingleton;
     private ImageLoader mImageLoader;
     private Context context;
 
     private String thumbnailUrl;
-    private ImageView mPhotoView;
+
     private String title;
 
 
@@ -118,6 +120,7 @@ public class WidgetIntentService extends IntentService {
             mPlot = data.getString(COL_PLOT);
             mVideoUrl = data.getString(COL_TRAILER);
             mRating = data.getString(COL_RATING);
+            mRuntime=data.getString(COL_RUNTIME);
             id = data.getLong(COL_ID);
 
             data.close();
