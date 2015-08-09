@@ -94,8 +94,8 @@ public class MoviesService extends IntentService {
         }
 
 
-        new JSonParser(this).parseAndSaveData(cpoTheaters, theatersUri, theatersResponse);
-        new JSonParser(this).parseAndSaveData(cpoComing, comingSoonUri, comingSoonResponse);
+        new JSonParser(this).parseAndSaveTheatersMovies(cpoTheaters, theatersUri, theatersResponse);
+        new JSonParser(this).parseAndSaveTheatersMovies(cpoComing, comingSoonUri, comingSoonResponse);
         new JSonParser(this).parseAndSaveData(cpoTop, topMoviesUri, topMoviesResponse);
         new JSonParser(this).parseAndSaveData(cpoBottom, bottomMoviesUri, bottomMoviesResponse);
 

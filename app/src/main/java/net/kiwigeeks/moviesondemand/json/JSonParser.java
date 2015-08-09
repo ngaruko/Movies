@@ -199,4 +199,122 @@ public class JSonParser {
     }
 
 
+    public void parseAndSaveTheatersMovies(ArrayList<ContentProviderOperation> cpo, Uri uri, JSONArray response) {
+
+        if (response != null && response.length() > 0) {
+
+
+            try {
+                for (int j = 0; j < response.length(); j++) {
+
+
+                    JSONObject body = (JSONObject) response.get(j);
+                    Log.e(" RESPONSE BODY", String.valueOf(body.length()));
+                    try {
+
+
+                        JSONArray movies;
+                        if (body.has(KEY_MOVIES)) {
+                            movies = body.getJSONArray(KEY_MOVIES);
+                        } else {
+
+                            movies = response;
+                        }
+
+
+                        Log.e("Movies ", String.valueOf(movies.length()));
+                        for (int i = 0; i < movies.length(); i++) {
+
+                            //Initialise all the fields
+
+                            String title = Constants.NA;
+                            String id = Constants.NA;
+                            String released = Constants.NA;
+                            Double rating = -1.0;
+                            String rated = Constants.NA;
+                            String urlPoster = Constants.NA;
+                            String ratingString = Constants.NA;
+                            String runtime = Constants.NA;
+                            String plot = Constants.NA;
+                            String genres = "";
+                            String tthumbnailUrl = Constants.NA;
+
+                            JSONObject currentMovie = movies.getJSONObject(i);
+                            if (currentMovie.has(KEY_ID) && !currentMovie.isNull(KEY_ID)) {
+                                id = currentMovie.getString(KEY_ID);
+                            }
+                            released = currentMovie.getString(KEY_RELEASE_DATE);
+                            int releaseDate = 0;
+                            releaseDate = Integer.parseInt(released);
+
+                            if (currentMovie.has(KEY_TITLE) && !currentMovie.isNull(KEY_TITLE)) {
+                                title = currentMovie.getString(KEY_TITLE);
+
+
+                            }
+                            if (currentMovie.has(KEY_RUNTIME) && !currentMovie.isNull(KEY_RUNTIME) && currentMovie.length() >= 1) {
+                                try {
+                                    runtime = currentMovie.getJSONArray(KEY_RUNTIME).get(0).toString();
+                                } catch (JSONException e) {
+                                    Log.e("Parse error", e.getMessage());
+                                }
+                            }
+                            if (currentMovie.has(KEY_GENRES) && !currentMovie.isNull(KEY_GENRES)) {
+
+                                //TODO serialise this
+                                JSONArray genresArray = currentMovie.getJSONArray(KEY_GENRES);
+                                for (int g = 0; g < genresArray.length(); g++) {
+                                    String genre = genresArray.get(g).toString();
+                                    genres = genres.concat(", " + genre).substring(1);
+
+                                }
+
+
+                            }
+
+
+                            rated = currentMovie.getString(KEY_RATED);
+                            plot = currentMovie.getString(KEY_PLOT);
+                            urlPoster = currentMovie.getString(KEY_URLPOSTER);
+                            if (currentMovie.has(KEY_RATINGS) && !currentMovie.isNull(KEY_RATINGS)) {
+                                ratingString = currentMovie.getString(KEY_RATINGS);
+                            }
+                            rating = getRating(ratingString);
+                            Log.e("ratings ", Double.toString(rating));
+
+
+                            //INSERT THIS TO DB
+                            ContentValues values = new ContentValues();
+
+                            values.put(COLUMN_TITLE, title);
+                            values.put(MoviesContract.MoviesColumns.COLUMN_IMDB_ID, id);
+                            values.put(MoviesContract.MoviesColumns.COLUMN_PLOT, plot);
+                            values.put(MoviesContract.MoviesColumns.COLUMN_RATED, rated);
+                            values.put(MoviesContract.MoviesColumns.COLUMN_RATING, rating);
+                            values.put(MoviesContract.MoviesColumns.COLUMN_RELEASE_DATE, releaseDate);
+                            values.put(MoviesContract.MoviesColumns.COLUMN_URL_THUMBNAIL, urlPoster);
+                            values.put(MoviesContract.MoviesColumns.COLUMN_GENRES, genres);
+                            values.put(MoviesContract.MoviesColumns.COLUMN_RUNTIME, runtime);
+
+                            if (!title.equals(Constants.NA)) {
+                                cpo.add(ContentProviderOperation.newInsert(uri).withValues(values).build());
+
+
+                            }
+
+                        }
+                        context.getContentResolver().applyBatch(CONTENT_AUTHORITY, cpo);
+                    } catch (JSONException | RemoteException | OperationApplicationException e) {
+                        Log.e("Error updating content.", "Error updating content.", e);
+                    }
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+
+    }
 }
