@@ -79,7 +79,7 @@ public class AdapterBottomMovies extends RecyclerView.Adapter<AdapterBottomMovie
 
 
                                                 viewStart.setTransitionName("transition");
-                                                
+
                                                 ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(context, viewStart, viewStart.getTransitionName());
 
 

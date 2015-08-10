@@ -1,10 +1,12 @@
 package net.kiwigeeks.moviesondemand.adapters;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,19 +26,17 @@ import net.kiwigeeks.moviesondemand.data.MovieLoader;
 import net.kiwigeeks.moviesondemand.data.MoviesContract;
 import net.kiwigeeks.moviesondemand.utilities.Constants;
 
-/**
- * Created by itl on 1/08/2015.
- */
+
 public class AdapterComingSoonMovies extends RecyclerView.Adapter<AdapterComingSoonMovies.ViewHolderMovies> {
         private Cursor mCursor;
         private LayoutInflater mLayoutInflater;
 
         private VolleySingleton mVolleySingleton;
         private ImageLoader mImageLoader;
-        private Context context;
+        private Activity context;
 
 
-        public AdapterComingSoonMovies(Cursor cursor, Context context) {
+        public AdapterComingSoonMovies(Cursor cursor, Activity context) {
                 this.context = context;
 
                 mCursor = cursor;
@@ -68,29 +68,52 @@ public class AdapterComingSoonMovies extends RecyclerView.Adapter<AdapterComingS
                 View view = mLayoutInflater.inflate(R.layout.coming_soon_movie_item_layout, parent, false);
 
                 final ViewHolderMovies vh = new ViewHolderMovies(view);
-            final Activity selfContext = (Activity) context;
+                final Activity selfContext = context;
                 view.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
+                                                @Override
+                                                public void onClick(View view) {
+                                                        Intent intent = new Intent(context, MoviePosterActivity.class);
+
+                                                        try {
 
 
-                                try {
+                                                                if (Build.VERSION.SDK_INT >= 21) {
+
+                                                                        View viewStart = view.findViewById(R.id.movieThumbnail);
 
 
-                                        Intent i = new Intent(context, MoviePosterActivity.class);
-                                        Uri uri = MoviesContract.ComingSoon.buildItemUri(getItemId(vh.getAdapterPosition()));
-                                    i.setData(uri);
-                                        i.putExtra("fragment", "coming");
-                                    context.startActivity(i);
+                                                                        viewStart.setTransitionName("transition");
+                                                                        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(context, viewStart, viewStart.getTransitionName());
 
 
-                                } catch (Exception e) {
-                                    Log.e("Intent Error", e.getMessage());
-                                }
+                                                                        Uri uri = MoviesContract.InTheater.buildItemUri(getItemId(vh.getAdapterPosition()));
+                                                                        intent.setData(uri);
 
-                                Log.e("position", String.valueOf(getItemId(vh.getAdapterPosition())));
-                        }
-                });
+                                                                        intent.putExtra("fragment", "theaters");
+
+
+                                                                        ActivityCompat.startActivity(context, intent, options.toBundle());
+                                                                } else {
+
+                                                                        Intent i = new Intent(context, MoviePosterActivity.class);
+                                                                        Uri uri = MoviesContract.InTheater.buildItemUri(getItemId(vh.getAdapterPosition()));
+                                                                        i.setData(uri);
+
+                                                                        i.putExtra("fragment", "theaters");
+                                                                        context.startActivity(i);
+                                                                }
+
+
+                                                        } catch (Exception e) {
+                                                                Log.e("Intent Error", e.getMessage());
+                                                        }
+
+
+                                                        Log.e("position", String.valueOf(getItemId(vh.getAdapterPosition())));
+                                                }
+                                        }
+
+                );
                 return vh;
         }
 

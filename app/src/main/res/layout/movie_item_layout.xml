@@ -26,7 +26,8 @@
             android:layout_width="@dimen/movie_thumbnail_width"
             android:layout_height="@dimen/movie_thumbnail_height"
             android:layout_centerVertical="true"
-            android:contentDescription="@string/movie_thumbnail" />
+            android:contentDescription="@string/movie_thumbnail"
+            android:transitionName="@string/action_transition" />
 
         <TextView
             android:id="@+id/movie_title"
