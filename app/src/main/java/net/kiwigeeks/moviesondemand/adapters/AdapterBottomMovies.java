@@ -1,9 +1,12 @@
 package net.kiwigeeks.moviesondemand.adapters;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,10 +33,10 @@ public class AdapterBottomMovies extends RecyclerView.Adapter<AdapterBottomMovie
 
     private VolleySingleton mVolleySingleton;
     private ImageLoader mImageLoader;
-    private Context context;
+    private Activity context;
 
 
-    public AdapterBottomMovies(Cursor cursor, Context context) {
+    public AdapterBottomMovies(Cursor cursor, Activity context) {
         this.context = context;
 
         mCursor = cursor;
@@ -63,29 +66,51 @@ public class AdapterBottomMovies extends RecyclerView.Adapter<AdapterBottomMovie
         final ViewHolderMovies vh = new ViewHolderMovies(view);
 
         view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Intent intent = new Intent(context, MoviePosterActivity.class);
+
+                                        try {
 
 
+                                            if (Build.VERSION.SDK_INT >= 21) {
 
-                    try {
-
-
-                        Intent i = new Intent(context, MoviePosterActivity.class);
-                        Uri uri = MoviesContract.BottomMovies.buildItemUri(getItemId(vh.getAdapterPosition()));
-                        i.setData(uri);
-                        i.putExtra("fragment", "bottom");
-                        context.startActivity(i);
+                                                View viewStart = view.findViewById(R.id.movieThumbnail);
 
 
-                    } catch (Exception e) {
-                        Log.e("Intent Error", e.getMessage());
-                    }
+                                                viewStart.setTransitionName("transition");
+                                                
+                                                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(context, viewStart, viewStart.getTransitionName());
 
 
-                Log.e("position", String.valueOf(getItemId(vh.getAdapterPosition())));
-            }
-        });
+                                                Uri uri = MoviesContract.InTheater.buildItemUri(getItemId(vh.getAdapterPosition()));
+                                                intent.setData(uri);
+
+                                                intent.putExtra("fragment", "theaters");
+
+
+                                                ActivityCompat.startActivity(context, intent, options.toBundle());
+                                            }else {
+
+                                                Intent i = new Intent(context, MoviePosterActivity.class);
+                                                Uri uri = MoviesContract.InTheater.buildItemUri(getItemId(vh.getAdapterPosition()));
+                                                i.setData(uri);
+
+                                                i.putExtra("fragment", "theaters");
+                                                context.startActivity(i);
+                                            }
+
+
+                                        }catch(Exception e){
+                                            Log.e("Intent Error", e.getMessage());
+                                        }
+
+
+                                        Log.e("position", String.valueOf(getItemId(vh.getAdapterPosition())));
+                                    }
+                                }
+
+        );
         return vh;
     }
 
